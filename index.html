@@ -422,17 +422,28 @@ section.view{padding:26px 0 70px}
   <button class="icobtn" id="themeBtn" title="Alternar tema" aria-label="Alternar tema"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg></button>
 </div>
 <div class="navbar"><div class="wrap"><nav class="nav" id="nav">
-  <button data-view="projetos" class="active">Projetos <span class="c" id="cProj"></span></button>
+  <button data-view="timeline" class="active">Linha do tempo</button>
+  <button data-view="projetos">Projetos <span class="c" id="cProj"></span></button>
   <button data-view="datas">Datas temáticas <span class="c" id="cDatas"></span></button>
   <button data-view="etapas">Etapas padrão</button>
 </nav></div></div></div>
 
 <main class="wrap">
-  <section class="view" id="view-projetos">
+  <section class="view" id="view-timeline">
+    <div class="vhead">
+      <div class="lead">
+        <h2>Linha do tempo</h2>
+        <p>Todas as coleções em paralelo — cada fase colorida, a folga de segurança, o lançamento e a linha do “hoje”. Arraste para o lado para navegar no tempo; use os botões para mostrar ou ocultar coleções.</p>
+      </div>
+    </div>
+    <div class="gantt-wrap" id="ganttWrap"></div>
+  </section>
+
+  <section class="view" id="view-projetos" hidden>
     <div class="vhead">
       <div class="lead">
         <h2>Planejamento</h2>
-        <p>Marque as fases conforme conclui — o banner de cada projeto mostra o que fazer agora. A linha do tempo, no fim, é a visão de conjunto.</p>
+        <p>Marque as fases conforme conclui — o banner de cada projeto mostra o que fazer agora.</p>
       </div>
       <div class="actions">
         <button class="btn" id="addProj"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Novo projeto</button>
@@ -441,7 +452,6 @@ section.view{padding:26px 0 70px}
     <div id="summaryBar"></div>
     <div class="grid" id="projList"></div>
     <div id="doneWrap"></div>
-    <div class="gantt-wrap" id="ganttWrap"></div>
   </section>
 
   <section class="view" id="view-datas" hidden>
@@ -774,7 +784,7 @@ function renderGantt(){
   var top=el("div","gantt-top");
   var chips='<span class="fl">Mostrar</span>';
   STATE.projects.forEach(function(p){chips+='<button class="gchip'+(p.show?"":" off")+'" data-gfilter="'+p.id+'" style="--pa:'+ACCENTS[p.accent||"mizu"]+'"><span class="gc"></span>'+esc(p.name)+'</button>';});
-  top.innerHTML='<h3>Linha do tempo</h3><div class="gfilters">'+(STATE.projects.length?chips:'')+'</div>';
+  top.innerHTML='<div class="gfilters">'+(STATE.projects.length?chips:'<span class="fl" style="color:var(--faint)">nenhuma coleção ainda</span>')+'</div>';
   wrap.appendChild(top);
   var vis=STATE.projects.filter(function(p){return p.show;});
   if(!vis.length){wrap.appendChild(el("div","gempty",STATE.projects.length?"Nenhum projeto selecionado acima.":"Adicione projetos para ver a linha do tempo."));return;}
@@ -910,7 +920,7 @@ function renderAll(){renderSummary();renderGantt();renderProjects();renderDates(
 
 /* events */
 document.getElementById("nav").addEventListener("click",function(e){var b=e.target.closest("button[data-view]");if(!b)return;switchTo(b.dataset.view);});
-function switchTo(v){document.querySelectorAll("#nav button").forEach(function(x){x.classList.toggle("active",x.dataset.view===v);});["projetos","datas","etapas"].forEach(function(k){document.getElementById("view-"+k).hidden=(k!==v);});}
+function switchTo(v){document.querySelectorAll("#nav button").forEach(function(x){x.classList.toggle("active",x.dataset.view===v);});["timeline","projetos","datas","etapas"].forEach(function(k){document.getElementById("view-"+k).hidden=(k!==v);});if(v==="timeline")renderGantt();}
 
 function touch(p){p.updatedAt=iso(TODAY);if(started(p)&&!p.startedAt)p.startedAt=iso(TODAY);}
 function syncPhaseFromSubs(p,phId){var st=p.phaseState[phId];if(st.subtasks.length){var all=st.subtasks.every(function(x){return x.done;});if(all&&!st.done){st.done=true;st.doneAt=iso(TODAY);}else if(!all&&st.done){st.done=false;st.doneAt=null;}}}
