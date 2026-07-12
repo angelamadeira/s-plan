@@ -208,6 +208,20 @@ section.view{padding:26px 0 70px}
 .gnrow .nmz{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gnrow.donerow{color:var(--muted)}
 .gnrow.donerow .gnd{opacity:.5}
+.gnrow[data-gopen],.grow[data-gopen]{cursor:pointer}
+.gnrow[data-gopen]:hover{background:var(--surface)}
+.gnrow.sel{background:color-mix(in srgb,var(--pa) 20%,var(--surface));box-shadow:inset 3px 0 0 var(--pa)}
+.grow.sel{background:color-mix(in srgb,var(--pa) 8%,transparent)}
+#timelineDetail{margin-top:18px}
+#timelineDetail:empty{display:none}
+.tldhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.tldhead>span{font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted)}
+.collbtn{border:0;background:transparent;color:var(--muted);padding:6px;border-radius:8px;display:grid;place-items:center;flex:0 0 auto}
+.collbtn:hover{color:var(--ink);background:var(--surface)}
+.collbtn .cv{width:18px;height:18px;transition:transform .2s;transform:rotate(90deg)}
+.proj.collapsed .collbtn .cv{transform:rotate(0)}
+.proj.collapsed .cbody{display:none}
+.proj.collapsed .statusbar{margin-bottom:14px}
 .gscroll{flex:1;overflow-x:auto;overflow-y:hidden}
 .gcanvas{position:relative;min-width:100%}
 .gband{position:relative;height:54px;border-bottom:1px solid var(--line)}
@@ -457,15 +471,17 @@ section.view{padding:26px 0 70px}
       </div>
     </div>
     <div class="gantt-wrap" id="ganttWrap"></div>
+    <div id="timelineDetail"></div>
   </section>
 
   <section class="view" id="view-projetos" hidden>
     <div class="vhead">
       <div class="lead">
         <h2>Planejamento</h2>
-        <p>Marque as fases conforme conclui — o banner de cada projeto mostra o que fazer agora.</p>
+        <p>Marque as fases conforme conclui — o banner de cada projeto mostra o que fazer agora. Clique no título de um card para recolher ou expandir.</p>
       </div>
       <div class="actions">
+        <button class="btn" id="collapseAll"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg><span class="lbl">Recolher tudo</span></button>
         <button class="btn" id="addProj"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Novo projeto</button>
       </div>
     </div>
@@ -573,6 +589,7 @@ function ensureProject(p){
   if(!p.qty||typeof p.qty!=="object")p.qty={P:0,M:1,G:0};
   SIZEIDS.forEach(function(s){if(typeof p.qty[s]!=="number")p.qty[s]=0;});
   if(p.show===undefined)p.show=true;
+  if(p.collapsed===undefined)p.collapsed=false;
   if(p.buffer===undefined)p.buffer=null;
   if(p.startedAt===undefined)p.startedAt=null;
   if(p.updatedAt===undefined)p.updatedAt=null;
@@ -701,9 +718,20 @@ function renderProjects(){
   if(!active.length&&!done.length){wrap.appendChild(el("div","gempty","Nenhum projeto ainda. Crie um projeto ou gere um a partir de uma data temática."));}
   active.slice().sort(function(a,b){return computeProject(a).start-computeProject(b).start;}).forEach(function(p){wrap.appendChild(projectCard(p));});
   renderDone(done);
+  var cb=$("#collapseAll");if(cb){var act=STATE.projects.filter(function(p){return !isDone(p);});var allc=act.length&&act.every(function(p){return p.collapsed;});var lbl=cb.querySelector(".lbl");if(lbl)lbl.textContent=allc?"Expandir tudo":"Recolher tudo";}
+}
+var selProj=null;
+function renderTimelineDetail(){
+  var box=$("#timelineDetail");if(!box)return;box.innerHTML="";
+  if(!selProj)return;
+  var p=findProj(selProj);if(!p){selProj=null;return;}
+  var head=el("div","tldhead");head.innerHTML='<span>Detalhe da coleção</span><button class="btn ghost sm" data-tlclose>✕ fechar</button>';
+  box.appendChild(head);
+  box.appendChild(projectCard(p,{detail:true}));
 }
 function statusBanner(p,cp){
   var ci=currentIndex(p),toStart=diffDays(TODAY,cp.start),toLaunch=diffDays(TODAY,cp.launch);
+  if(ci>=STATE.phases.length)return{cls:"ontrack",ic:icCheck(),a:"Concluído",b:"Lançou "+fmtY(cp.launch)};
   if(toLaunch<0&&ci<STATE.phases.length)return{cls:"late",ic:icAlert(),a:"Lançamento passou há "+(-toLaunch)+" dias",b:"Estava previsto para "+fmtY(cp.launch)};
   if(!started(p)){
     if(toStart<0)return{cls:"late",ic:icAlert(),a:"Comece já — atrasado "+(-toStart)+" dias",b:"Início ideal era "+fmtY(cp.start)+" · lança "+fmt(cp.launch)};
@@ -713,33 +741,38 @@ function statusBanner(p,cp){
   var ph=STATE.phases[ci],ns=nextSubtask(p),behind=idealIndex(cp)>ci;
   return{cls:behind?"late":"prod",ic:behind?icAlert():icPlay(),a:"Agora: "+ph.name+(ns?" → "+ns:""),b:(behind?"Atrás do cronograma · ":"No prazo · ")+"faltam "+toLaunch+" dias para lançar"};
 }
-function projectCard(p){
+function projectCard(p,opts){
+  var detail=opts&&opts.detail;
+  var collapsed=detail?false:!!p.collapsed;
   var cp=computeProject(p),ci=currentIndex(p),ban=statusBanner(p,cp);
   var pa=ACCENTS[p.accent||STATE.phases[0].accent];
-  var card=el("div","proj");card.dataset.id=p.id;
+  var card=el("div","proj"+(collapsed?" collapsed":""));card.dataset.id=p.id;
   var h=el("div","ph");h.style.setProperty("--pa",pa);
   h.innerHTML='<div class="swatch"></div><div class="nm"><input class="tt" data-f="name" value="'+esc(p.name)+'" aria-label="Nome do projeto"/>'+
     '<div class="sub">Lança <b class="num">'+fmtY(cp.launch)+'</b> · '+esc(qtyDesc(p.qty))+'</div></div>'+
-    '<select class="corsel" data-f="accent" aria-label="Cor" title="Cor do projeto">'+accentOptions(p.accent)+'</select>';
+    '<select class="corsel" data-f="accent" aria-label="Cor" title="Cor do projeto">'+accentOptions(p.accent)+'</select>'+
+    (detail?'':'<button class="collbtn" data-collapse aria-label="Recolher ou expandir">'+icChev()+'</button>');
   card.appendChild(h);
   var b=el("div","body");
   b.appendChild(banner(ban));
+  var cb=el("div","cbody");
   var ph=el("div","phases");
   cp.segs.forEach(function(sg,i){ph.appendChild(phaseBlock(p,sg,i,ci));});
   if(cp.buffer>0){var bl=el("div","bufline");bl.innerHTML='<span class="bd"></span><span class="pn">Folga de segurança</span><span class="win num">'+cp.buffer+' dias · até '+fmt(cp.launch)+'</span>';ph.appendChild(bl);}
   var goal=el("div","goalline");goal.innerHTML='<span class="gd"></span><span class="pn">Lançamento</span><span class="win num">'+fmtY(cp.launch)+'</span>';
   ph.appendChild(goal);
-  b.appendChild(ph);
+  cb.appendChild(ph);
   var det=el("details","moreblk");
   det.innerHTML='<summary>Ajustes da coleção</summary>'+
     '<div class="metarow"><div class="field"><label>Lançamento</label><input type="date" data-f="launch" value="'+esc(p.launch)+'"></div>'+
     '<div class="field"><label>Moldes por tamanho</label><span class="qbs"><b>P</b><input type="number" min="0" data-q="P" value="'+p.qty.P+'"><b>M</b><input type="number" min="0" data-q="M" value="'+p.qty.M+'"><b>G</b><input type="number" min="0" data-q="G" value="'+p.qty.G+'"></span></div>'+
     '<div class="field"><label>Folga de segurança (dias)</label><input type="number" min="0" data-f="buffer" value="'+(p.buffer==null?"":p.buffer)+'" placeholder="padrão: '+STATE.settings.buffer+'" style="width:110px"></div>'+
     '<div class="field note"><label>Observação</label><input data-f="note" value="'+esc(p.note||"")+'" placeholder="detalhe da coleção…"></div></div>';
-  b.appendChild(det);
+  cb.appendChild(det);
   var f=el("div","cardfoot");
   f.innerHTML='<span>Ciclo <b class="num">'+cp.total+'</b> dias · comece em <b class="num">'+fmtY(cp.start)+'</b>'+(cp.buffer>0?' · produção acaba <b class="num">'+fmt(cp.prodEnd)+'</b>':'')+'</span><button class="btn ghost sm rm" data-del="'+p.id+'">'+icTrash()+' remover</button>';
-  b.appendChild(f);
+  cb.appendChild(f);
+  b.appendChild(cb);
   card.appendChild(b);
   return card;
 }
@@ -823,7 +856,7 @@ function renderGantt(){
   var HEAD=54,ROW=46,rowsH=vis.length*ROW;
   var g2=el("div","gantt2");
   var names=el("div","gnames");names.appendChild(el("div","gnhead"));
-  vis.forEach(function(p){var nr=el("div","gnrow"+(isDone(p)?" donerow":""));nr.style.setProperty("--pa",ACCENTS[p.accent||"mizu"]);nr.innerHTML='<span class="gnd"></span><span class="nmz">'+esc(p.name)+'</span>';names.appendChild(nr);});
+  vis.forEach(function(p){var nr=el("div","gnrow"+(isDone(p)?" donerow":"")+(p.id===selProj?" sel":""));nr.setAttribute("data-gopen",p.id);nr.style.setProperty("--pa",ACCENTS[p.accent||"mizu"]);nr.innerHTML='<span class="gnd"></span><span class="nmz">'+esc(p.name)+'</span>';names.appendChild(nr);});
   g2.appendChild(names);
   var scroll=el("div","gscroll"),canvas=el("div","gcanvas");canvas.style.width=W+"px";
   var band=el("div","gband");band.style.width=W+"px";
@@ -833,7 +866,7 @@ function renderGantt(){
   holis.forEach(function(h){var line=el("div","gholilab");line.style.left=x(h.date)+"px";line.style.height=(HEAD-30+rowsH)+"px";line.innerHTML='<span>'+esc(h.name)+'</span>';canvas.appendChild(line);});
   var rows=el("div","grows");
   vis.forEach(function(p,ri){
-    var cp=comps[ri],ci=currentIndex(p);var row=el("div","grow");var track=el("div","gtrack");
+    var cp=comps[ri],ci=currentIndex(p);var row=el("div","grow"+(p.id===selProj?" sel":""));row.setAttribute("data-gopen",p.id);row.style.setProperty("--pa",ACCENTS[p.accent||"mizu"]);var track=el("div","gtrack");
     cp.segs.forEach(function(sg,i){var isd=phaseDone(p,sg.ph);var bar=el("div","gbar"+(isd?" done":"")+(i===ci?" cur":""));bar.style.left=x(sg.start)+"px";bar.style.width=Math.max(3,sg.days*PX)+"px";bar.style.background=ACCENTS[sg.ph.accent];bar.title=p.name+" · "+sg.ph.name+": "+fmt(sg.start)+" – "+fmt(sg.end)+" ("+sg.days+"d)"+(isd?" ✓":"");track.appendChild(bar);});
     if(cp.buffer>0){var buf=el("div","gbuf");buf.style.left=x(cp.prodEnd)+"px";buf.style.width=Math.max(2,cp.buffer*PX)+"px";buf.title="Folga de segurança: "+cp.buffer+" dias";track.appendChild(buf);}
     var mile=el("div","gmile");mile.style.left=x(cp.launch)+"px";mile.title="Lançamento "+fmtY(cp.launch);track.appendChild(mile);
@@ -948,12 +981,12 @@ function refreshTemplateDerived(){
 }
 function setRefControls(){SIZEIDS.forEach(function(s){var arr=document.querySelectorAll('[data-refq="'+s+'"]');for(var i=0;i<arr.length;i++)if(arr[i]!==document.activeElement)arr[i].value=STATE.ref.qty[s];});}
 
-function renderProjSide(){renderSummary();renderProjects();renderGantt();save();}
-function renderAll(){renderSummary();renderGantt();renderProjects();renderDates();renderTemplate();setRefControls();save();}
+function renderProjSide(){renderSummary();renderProjects();renderGantt();renderTimelineDetail();save();}
+function renderAll(){renderSummary();renderGantt();renderProjects();renderDates();renderTemplate();setRefControls();renderTimelineDetail();save();}
 
 /* events */
 document.getElementById("nav").addEventListener("click",function(e){var b=e.target.closest("button[data-view]");if(!b)return;switchTo(b.dataset.view);});
-function switchTo(v){document.querySelectorAll("#nav button").forEach(function(x){x.classList.toggle("active",x.dataset.view===v);});["timeline","projetos","datas","etapas"].forEach(function(k){document.getElementById("view-"+k).hidden=(k!==v);});if(v==="timeline")renderGantt();}
+function switchTo(v){document.querySelectorAll("#nav button").forEach(function(x){x.classList.toggle("active",x.dataset.view===v);});["timeline","projetos","datas","etapas"].forEach(function(k){document.getElementById("view-"+k).hidden=(k!==v);});if(v==="timeline"){renderGantt();renderTimelineDetail();}}
 
 function touch(p){p.updatedAt=iso(TODAY);if(started(p)&&!p.startedAt)p.startedAt=iso(TODAY);}
 function syncPhaseFromSubs(p,phId){var st=p.phaseState[phId];if(st.subtasks.length){var all=st.subtasks.every(function(x){return x.done;});if(all&&!st.done){st.done=true;st.doneAt=iso(TODAY);}else if(!all&&st.done){st.done=false;st.doneAt=null;}}}
@@ -1001,6 +1034,12 @@ document.addEventListener("click",function(e){
   if(gall){STATE.projects.forEach(function(p){p.show=true;});renderGantt();save();return;}
   var gf=e.target.closest("[data-gfilter]");
   if(gf){var p5=findProj(gf.getAttribute("data-gfilter"));if(p5){p5.show=!p5.show;renderGantt();save();}return;}
+  var gopen=e.target.closest("[data-gopen]");
+  if(gopen){var oid=gopen.getAttribute("data-gopen");selProj=(selProj===oid?null:oid);renderGantt();renderTimelineDetail();if(selProj){var dbox=$("#timelineDetail");if(dbox)dbox.scrollIntoView({behavior:"smooth",block:"start"});}return;}
+  var tlc=e.target.closest("[data-tlclose]");
+  if(tlc){selProj=null;renderGantt();renderTimelineDetail();return;}
+  var col=e.target.closest("[data-collapse]");
+  if(col){var ccard=col.closest(".proj");var cp2=findProj(ccard.dataset.id);if(cp2){cp2.collapsed=!cp2.collapsed;ccard.classList.toggle("collapsed",cp2.collapsed);var act=STATE.projects.filter(function(x){return !isDone(x);});var lblb=$("#collapseAll .lbl");if(lblb)lblb.textContent=(act.length&&act.every(function(x){return x.collapsed;}))?"Expandir tudo":"Recolher tudo";save();}return;}
   var af=e.target.closest("[data-applyfactor]");
   if(af){var f=+af.getAttribute("data-applyfactor");STATE.phases.forEach(function(ph){ph.base=round2(ph.base*f);ph.perPiece=round2(ph.perPiece*f);});renderAll();toast("Padrões ajustados pela sua experiência real");return;}
   var re=e.target.closest("[data-reopen]");
@@ -1023,6 +1062,7 @@ $("#addProj").addEventListener("click",function(){
   ensureProject(p);STATE.phases.forEach(function(ph){p.phaseState[ph.id].subtasks=subsFromTemplate(ph);});STATE.projects.push(p);renderProjSide();switchTo("projetos");
   var last=$('.proj[data-id="'+p.id+'"]');if(last){last.scrollIntoView({behavior:"smooth",block:"center"});var i=$('input[data-f="name"]',last);if(i){i.focus();i.select();}}
 });
+$("#collapseAll").addEventListener("click",function(){var act=STATE.projects.filter(function(p){return !isDone(p);});var allc=act.length&&act.every(function(p){return p.collapsed;});act.forEach(function(p){p.collapsed=!allc;});renderProjects();save();});
 $("#addDate").addEventListener("click",function(){STATE.dates.push({id:"d"+Math.random().toString(36).slice(2,7),name:"Nova data",holiday:iso(addDays(TODAY,120)),lead:4,porte:"m",accent:"mizu",note:""});renderDates();renderGantt();save();});
 $("#applyAll").addEventListener("click",function(){STATE.projects.forEach(function(p){p.overrides={};STATE.phases.forEach(function(ph){var st=p.phaseState[ph.id];if(!st||st.done)return;var have={};st.subtasks.forEach(function(x){have[x.text.trim().toLowerCase()]=1;});(ph.subtasks||[]).forEach(function(t){if(!have[t.text.trim().toLowerCase()])st.subtasks.push({id:sid(),text:t.text,done:false});});});});renderProjSide();toast("Padrões e subtarefas aplicados a todos os projetos");});
 
