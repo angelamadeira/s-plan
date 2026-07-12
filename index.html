@@ -44,6 +44,8 @@ h1,h2,h3{font-weight:500;line-height:1.16;margin:0;text-wrap:balance}
 .num{font-variant-numeric:tabular-nums}
 .serif{font-family:var(--serif);font-style:italic;font-weight:500}
 button{font-family:inherit;cursor:pointer}
+input[type=number]{-moz-appearance:textfield;appearance:textfield}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:3px}
 
 .top{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(9px);border-bottom:1px solid var(--line)}
@@ -99,7 +101,7 @@ section.view{padding:26px 0 70px}
 .qbs{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
 .qbs b{color:var(--muted);font-weight:500;font-size:11px;letter-spacing:.03em;margin-left:4px}
 .qbs b:first-child{margin-left:0}
-.qbs input{width:40px;text-align:center;font-family:inherit;font-size:13px;color:var(--ink);background:var(--field);border:1px solid var(--field-line);border-radius:7px;padding:5px 3px;font-variant-numeric:tabular-nums}
+.qbs input{width:48px;text-align:center;font-family:inherit;font-size:14px;line-height:1.3;color:var(--ink);background:var(--field);border:1px solid var(--field-line);border-radius:7px;padding:7px 5px;font-variant-numeric:tabular-nums}
 
 /* project cards */
 .grid{display:grid;gap:16px}
@@ -195,6 +197,8 @@ section.view{padding:26px 0 70px}
 .gchip .gc{width:9px;height:9px;border-radius:50%;background:var(--pa);flex:0 0 auto}
 .gchip.off{color:var(--faint);text-decoration:line-through}
 .gchip.off .gc{background:var(--faint)!important}
+.gchip.gall{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:500}
+.gchip.gall.on{background:var(--surface);color:var(--muted);border-color:var(--line);font-weight:400}
 .gantt2{display:flex}
 .gnames{flex:0 0 176px;border-right:1px solid var(--line);background:var(--raised);position:relative;z-index:2}
 .gnhead{height:54px;border-bottom:1px solid var(--line)}
@@ -322,7 +326,7 @@ section.view{padding:26px 0 70px}
 
 /* quiet per-phase day override + goal flag */
 .prow2 .din{color:var(--faint);font-size:11.5px;gap:1px}
-.prow2 .din input{width:34px;border-color:transparent;background:transparent;color:var(--faint);padding:5px 2px}
+.prow2 .din input{width:42px;border-color:transparent;background:transparent;color:var(--faint);padding:5px 4px;line-height:1.3}
 .prow2:hover .din input,.prow2 .din input:focus{border-color:var(--field-line);background:var(--field);color:var(--ink)}
 .prow2 .din input.ov{color:var(--gold)}
 .goalline svg{width:14px;height:14px;color:var(--gold);flex:0 0 auto}
@@ -503,7 +507,7 @@ section.view{padding:26px 0 70px}
 </main>
 
 <footer class="foot"><div class="wrap">
-  <svg class="wm" viewBox="0 0 2765.8 659.2" aria-label="suzu"><path fill="currentColor" transform="translate(0 559.2) scale(1 -1)" d="M77.9990234375 130.9993896484375 36.2003173828125 107.2003173828125Q45.60009765625 78.2001953125 67.4998779296875 51.20013427734375Q89.399658203125 24.2000732421875 124.799560546875 7.10003662109375Q160.19946289062 -10 200 -10Q244 -10 273.5 12.5Q303 35 303 69Q303 100 281 121Q259 142 217 152L165 164Q127 173 110.5 187.5Q94 202 94 224Q94 252 119.5 270.5Q145 289 184 289Q222 289 251.5 271Q281 253 296 222L305 227Q291 261 262.5 281.5Q234 302 197 302Q159 302 133 281Q107 260 107 230Q107 203 127.5 185.5Q148 168 187 159L239 147Q280 138 297.5 122.5Q315 107 315 83Q315 51 287.5 29.5Q260 8 216 8Q157 8 116.5 40.5Q76 73 63 128Z"/></svg>
+  <svg class="wm" viewBox="0 0 2765.8 659.2" aria-label="suzu" role="img"><path fill="currentColor" transform="translate(53.8 559.2) scale(1 -1)" d="M77.9990234375 130.9993896484375 36.2003173828125 107.2003173828125Q45.60009765625 78.2001953125 67.4998779296875 51.20013427734375Q89.399658203125 24.2000732421875 124.799560546875 7.10003662109375Q160.199462890625 -10.0 208.1995849609375 -10.0Q274.3992919921875 -10.0 315.4991455078125 27.599853515625Q356.5989990234375 65.19970703125 356.5989990234375 124.7996826171875Q356.5989990234375 163.799560546875 337.4990234375 188.99951171875Q318.3990478515625 214.199462890625 286.79913330078125 231.29937744140625Q255.19921875 248.3992919921875 217.9993896484375 261.59912109375Q189.59912109375 271.59912109375 164.99896240234375 282.79913330078125Q140.3988037109375 293.9991455078125 125.19873046875 311.39935302734375Q109.9986572265625 328.799560546875 109.9986572265625 356.0001220703125Q109.9986572265625 389.4007568359375 133.5989990234375 406.0010986328125Q157.1993408203125 422.6014404296875 190.599853515625 422.6014404296875Q236.6004638671875 422.6014404296875 265.70050048828125 401.00115966796875Q294.800537109375 379.40087890625 311.400390625 349.400634765625L353.799072265625 375.19970703125Q341.7991943359375 401.19970703125 319.79937744140625 422.19976806640625Q297.799560546875 443.1998291015625 266.899658203125 456.19989013671875Q235.999755859375 469.199951171875 196.599609375 469.199951171875Q161.19970703125 469.199951171875 129.69989013671875 456.39996337890625Q98.2000732421875 443.5999755859375 78.7001953125 417.800048828125Q59.2003173828125 392.0001220703125 59.2003173828125 353.000244140625Q59.2003173828125 311.8001708984375 78.500244140625 286.30023193359375Q97.8001708984375 260.80029296875 127.900146484375 245.70037841796875Q158.0001220703125 230.6004638671875 190.4002685546875 219.00048828125Q220.200439453125 209.00048828125 246.00054931640625 196.50042724609375Q271.8006591796875 184.0003662109375 287.90069580078125 165.500244140625Q304.000732421875 147.0001220703125 304.000732421875 119.39990234375Q304.000732421875 80.7991943359375 278.30035400390625 59.298828125Q252.5999755859375 37.7984619140625 210.5994873046875 37.7984619140625Q174.9990234375 37.7984619140625 148.6988525390625 50.6986083984375Q122.398681640625 63.5987548828125 105.19873046875 84.99896240234375Q87.998779296875 106.399169921875 77.9990234375 130.9993896484375ZM813.99853515625 167.999267578125V460.0H762.000244140625V161.99951171875Q762.000244140625 83.19970703125 800.199951171875 36.599853515625Q838.399658203125 -10.0 909.9996337890625 -10.0Q961.5999755859375 -10.0 999.8002319335938 18.1004638671875Q1038.00048828125 46.200927734375 1057.000244140625 96.00146484375V0.0H1108.99853515625V460.0H1057.000244140625V180.0Q1057.000244140625 140.7996826171875 1039.7000732421875 108.79931640625Q1022.39990234375 76.7989501953125 991.899658203125 58.09869384765625Q961.3994140625 39.3984375 921.9991455078125 39.3984375Q866.398681640625 39.3984375 840.1986083984375 73.59869384765625Q813.99853515625 107.7989501953125 813.99853515625 167.999267578125ZM1799.6019287109375 411.0015869140625 1485.0001220703125 0.0H1886.9996337890625V48.9984130859375H1580.3970947265625L1894.9989013671875 460.0H1510.9998779296875V411.0015869140625ZM2326.99853515625 167.999267578125V460.0H2275.000244140625V161.99951171875Q2275.000244140625 83.19970703125 2313.199951171875 36.599853515625Q2351.399658203125 -10.0 2422.9996337890625 -10.0Q2474.5999755859375 -10.0 2512.8002319335938 18.1004638671875Q2551.00048828125 46.200927734375 2570.000244140625 96.00146484375V0.0H2621.99853515625V460.0H2570.000244140625V180.0Q2570.000244140625 140.7996826171875 2552.7000732421875 108.79931640625Q2535.39990234375 76.7989501953125 2504.899658203125 58.09869384765625Q2474.3994140625 39.3984375 2434.9991455078125 39.3984375Q2379.398681640625 39.3984375 2353.1986083984375 73.59869384765625Q2326.99853515625 107.7989501953125 2326.99853515625 167.999267578125Z"/></svg>
   <div class="dots"><i style="background:var(--sakura)"></i><i style="background:var(--fuji)"></i><i style="background:var(--torinoko)"></i><i style="background:var(--mizu)"></i><i style="background:var(--sango)"></i><i style="background:var(--matcha)"></i></div>
   <div class="sig">small joys, beautifully molded.</div>
   <div class="ft">Studio Suzu · Cronograma de Coleções · 2026 &nbsp;·&nbsp; Made in Brazil</div>
@@ -799,7 +803,8 @@ function recomputeCard(card,p){
 function renderGantt(){
   var wrap=$("#ganttWrap");wrap.innerHTML="";
   var top=el("div","gantt-top");
-  var chips='<span class="fl">Mostrar</span>';
+  var allShown=STATE.projects.length&&STATE.projects.every(function(p){return p.show;});
+  var chips='<span class="fl">Mostrar</span><button class="gchip gall'+(allShown?" on":"")+'" data-gall>Ver tudo</button>';
   STATE.projects.forEach(function(p){chips+='<button class="gchip'+(p.show?"":" off")+'" data-gfilter="'+p.id+'" style="--pa:'+ACCENTS[p.accent||"mizu"]+'"><span class="gc"></span>'+esc(p.name)+'</button>';});
   top.innerHTML='<div class="gfilters">'+(STATE.projects.length?chips:'<span class="fl" style="color:var(--faint)">nenhuma coleção ainda</span>')+'</div>';
   wrap.appendChild(top);
@@ -992,6 +997,8 @@ document.addEventListener("click",function(e){
   if(sdel){var p3=projFromEl(sdel);if(p3){var pr3=sdel.getAttribute("data-subdel").split("|");var st3=p3.phaseState[pr3[0]];st3.subtasks=st3.subtasks.filter(function(x){return x.id!==pr3[1];});syncPhaseFromSubs(p3,pr3[0]);touch(p3);renderProjSide();}return;}
   var stog=e.target.closest("[data-subtog]");
   if(stog){var p4=projFromEl(stog);if(p4){var st4=p4.phaseState[stog.getAttribute("data-subtog")];st4.open=!st4.open;renderProjects();save();}return;}
+  var gall=e.target.closest("[data-gall]");
+  if(gall){STATE.projects.forEach(function(p){p.show=true;});renderGantt();save();return;}
   var gf=e.target.closest("[data-gfilter]");
   if(gf){var p5=findProj(gf.getAttribute("data-gfilter"));if(p5){p5.show=!p5.show;renderGantt();save();}return;}
   var af=e.target.closest("[data-applyfactor]");
