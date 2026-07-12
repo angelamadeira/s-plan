@@ -212,6 +212,24 @@ section.view{padding:26px 0 70px}
 .agitem .adate{font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums;white-space:nowrap;flex:0 0 auto}
 .agempty{color:var(--muted);font-size:13px;padding:4px 0 10px}
 .agmore{color:var(--faint);font-size:12px;padding:16px 0 4px;text-align:center}
+
+/* agenda sidebar */
+.aside{position:fixed;top:0;right:0;height:100vh;width:344px;max-width:88vw;background:var(--bg);border-left:1px solid var(--line);z-index:46;display:flex;flex-direction:column;transform:translateX(102%);transition:transform .25s ease}
+body.agenda-on .aside{transform:none;box-shadow:-10px 0 40px rgba(0,0,0,.14)}
+.aside .ahead{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--line);flex:0 0 auto}
+.aside .atitle{font-size:16px;font-weight:500}
+.aside .acount{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;margin-left:4px}
+.aside .abody{overflow-y:auto;padding:6px 18px 26px;flex:1}
+.aside-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:45;opacity:0;pointer-events:none;transition:opacity .2s}
+.aside .agenda,.aside .abody.agenda{max-width:none}
+.aside .agday{padding:12px 0 3px}
+.aside .agday:first-child{padding-top:4px}
+.aside .agitem{padding:8px 11px;margin-bottom:6px}
+.aside .agitem .adate{display:none}
+.aside .agdate .dnum{font-size:16px}
+.aside .agdate{margin-bottom:9px}
+@media (min-width:1080px){ body.agenda-on{padding-right:344px} }
+@media (max-width:1079px){ body.agenda-on .aside-backdrop{opacity:1;pointer-events:auto} }
 .subitem .sdel{display:grid;place-items:center;padding:4px;border-radius:6px;color:var(--faint);background:transparent;border:0;flex:0 0 auto}
 .subitem .sdel svg{width:14px;height:14px}
 .subitem .sdel:hover{color:var(--sango);background:var(--surface)}
@@ -450,6 +468,8 @@ section.view{padding:26px 0 70px}
 .stpl .sitem .sdot{width:5px;height:5px;border-radius:50%;background:var(--faint);flex:0 0 auto;margin-left:3px}
 .stpl .sitem input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font-family:inherit;font-size:13px;border-bottom:1px dashed transparent;padding:3px 0}
 .stpl .sitem input:hover,.stpl .sitem input:focus{border-bottom-color:var(--field-line);outline:0}
+.stpl .stdur{display:flex;align-items:center;gap:3px;color:var(--faint);font-size:11px;flex:0 0 auto}
+.stpl .stdur input{width:36px;text-align:center;border:1px solid var(--field-line);background:var(--field);color:var(--ink);border-radius:6px;padding:3px 2px;font-family:inherit;font-size:12px;font-variant-numeric:tabular-nums}
 .stpl .sitem .del{border:0;background:transparent;color:var(--faint);font-size:17px;line-height:1;padding:0 6px;border-radius:6px;flex:0 0 auto}
 .stpl .sitem .del:hover{color:var(--sango);background:var(--surface)}
 .stpl .sadd{display:flex;margin-top:7px}
@@ -536,11 +556,11 @@ section.view{padding:26px 0 70px}
   </div>
   <div class="spacer"></div>
   <div class="today-pill">Hoje · <b id="todayLabel">—</b></div>
+  <button class="icobtn" id="asideBtn" title="Agenda do dia" aria-label="Agenda do dia"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></button>
   <button class="icobtn" id="themeBtn" title="Alternar tema" aria-label="Alternar tema"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg></button>
 </div>
 <div class="navbar"><div class="wrap"><nav class="nav" id="nav">
   <button data-view="timeline" class="active">Linha do tempo</button>
-  <button data-view="agenda">Por dia</button>
   <button data-view="projetos">Projetos <span class="c" id="cProj"></span></button>
   <button data-view="datas">Datas temáticas <span class="c" id="cDatas"></span></button>
   <button data-view="etapas">Etapas padrão</button>
@@ -556,16 +576,6 @@ section.view{padding:26px 0 70px}
     </div>
     <div class="gantt-wrap" id="ganttWrap"></div>
     <div id="timelineDetail"></div>
-  </section>
-
-  <section class="view" id="view-agenda" hidden>
-    <div class="vhead">
-      <div class="lead">
-        <h2>Por dia</h2>
-        <p>O que precisa ser feito, dia a dia — juntando as fases e subtarefas de todas as coleções ativas. Marque conforme conclui; some da lista quando pronto.</p>
-      </div>
-    </div>
-    <div class="agenda" id="agendaList"></div>
   </section>
 
   <section class="view" id="view-projetos" hidden>
@@ -623,6 +633,11 @@ section.view{padding:26px 0 70px}
   <div class="ft">Studio Suzu · Cronograma de Coleções · 2026 &nbsp;·&nbsp; Made in Brazil</div>
 </div></footer>
 
+<div class="aside-backdrop" id="asideBackdrop"></div>
+<aside class="aside" id="agendaSide">
+  <div class="ahead"><div><span class="atitle">Por dia</span> <span class="acount" id="agendaCount"></span></div><button class="icobtn" id="asideClose" aria-label="Fechar agenda"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="abody agenda" id="agendaList"></div>
+</aside>
 <div class="toast" id="toast"></div>
 <div class="celeb" id="celeb" hidden><div class="celeb-card" id="celebCard"></div></div>
 <div class="celeb" id="confirmModal" hidden><div class="celeb-card" id="confirmCard"></div></div>
@@ -634,13 +649,13 @@ var KEY="suzu_cronograma_v5";
 var ACCENTS={mizu:"var(--mizu)",fuji:"var(--fuji)",torinoko:"var(--torinoko)",sango:"var(--sango)",matcha:"var(--matcha)",sakura:"var(--sakura)",gold:"var(--gold)"};
 var SIZEIDS=["P","M","G"];
 
-function mkSubs(arr){return arr.map(function(t){return{id:sid(),text:t};});}
+function mkSubs(arr){return arr.map(function(t){return Array.isArray(t)?{id:sid(),text:t[0],days:t[1]||0}:{id:sid(),text:t,days:0};});}
 function defPhases(){return[
-  {id:"conceito", name:"Conceito",               accent:"mizu",     base:7,  perPiece:0, production:false, meta:"pesquisa · referências · esboço", subtasks:mkSubs(["Pesquisa de referências","Definir tema e formatos","Aprovar conceito"])},
-  {id:"modelo3d", name:"Molde 3D",               accent:"fuji",     base:10, perPiece:0, production:false, meta:"modelagem autoral em 3D", subtasks:mkSubs(["Modelar peças em 3D","Conferir medidas e desforma","Exportar arquivos"])},
+  {id:"conceito", name:"Conceito",               accent:"mizu",     base:7,  perPiece:0, production:false, meta:"pesquisa · referências · esboço", subtasks:mkSubs([["Pesquisa de referências",3],["Definir tema e formatos",2],["Aprovar conceito",2]])},
+  {id:"modelo3d", name:"Molde 3D",               accent:"fuji",     base:10, perPiece:0, production:false, meta:"modelagem autoral em 3D", subtasks:mkSubs([["Modelar peças em 3D",6],["Conferir medidas e desforma",2],["Exportar arquivos",2]])},
   {id:"impressao",name:"Impressão 3D",           accent:"torinoko", base:2,  perPiece:2, production:true,  meta:"impressão das peças · acabamento", subtasks:mkSubs(["Imprimir masters","Lixar e acabar","Selar superfície"])},
   {id:"silicone", name:"Molde de silicone",      accent:"sango",    base:3,  perPiece:4, production:true,  meta:"molde · cura · desforma", subtasks:mkSubs(["Preparar a caixa/base","Misturar e verter o silicone","Cura","Desforma e teste"])},
-  {id:"divulgacao",name:"Materiais de divulgação",accent:"matcha",  base:14, perPiece:0, production:false, meta:"fotos · reels · teasers · pré-venda", subtasks:mkSubs(["Fotos das peças","Reels / vídeos","Textos e legendas","Abrir pré-venda"])}
+  {id:"divulgacao",name:"Materiais de divulgação",accent:"matcha",  base:14, perPiece:0, production:false, meta:"fotos · reels · teasers · pré-venda", subtasks:mkSubs([["Fotos das peças",5],["Reels / vídeos",4],["Textos e legendas",3],["Abrir pré-venda",2]])}
 ];}
 function defSizes(){return[
   {id:"P",label:"Pequeno",hint:"até ~5 cm",mult:0.75},
@@ -665,10 +680,10 @@ function today(){var n=new Date();return new Date(n.getFullYear(),n.getMonth(),n
 var TODAY=today();
 var STATE=load();
 function load(){
-  try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&s.phases&&s.projects&&s.dates&&s.sizes&&s.ref&&s.settings){s.phases.forEach(function(ph){if(!ph.subtasks){var d=defPhases().filter(function(x){return x.id===ph.id;})[0];ph.subtasks=d?d.subtasks:[];}});s.projects.forEach(ensureProject);return s;}}catch(e){}
+  try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&s.phases&&s.projects&&s.dates&&s.sizes&&s.ref&&s.settings){s.phases.forEach(function(ph){var d=defPhases().filter(function(x){return x.id===ph.id;})[0];if(!ph.subtasks){ph.subtasks=d?d.subtasks:[];}else{ph.subtasks.forEach(function(t){if(t.days===undefined){var m=d&&d.subtasks.filter(function(x){return x.text===t.text;})[0];t.days=m?m.days:0;}});}});s.projects.forEach(ensureProject);return s;}}catch(e){}
   return{phases:defPhases(),sizes:defSizes(),dates:defDates(),ref:{qty:{P:0,M:1,G:0}},settings:defSettings(),projects:seedProjects()};
 }
-function subsFromTemplate(ph){return (ph.subtasks||[]).map(function(t){return{id:sid(),text:t.text,done:false,days:0};});}
+function subsFromTemplate(ph){return (ph.subtasks||[]).map(function(t){return{id:sid(),text:t.text,done:false,days:(t.days||0)};});}
 function seedProjects(){
   var phs=STATE_PHASES();
   var a={id:uid(),name:"Coleção Páscoa 2027",launch:"2027-01-31",accent:"torinoko",qty:{P:0,M:1,G:2},show:true,buffer:null,note:"ovos recheáveis — 3 formatos",phaseState:{},startedAt:"2026-06-01",updatedAt:iso(TODAY)};
@@ -851,6 +866,7 @@ function renderAgenda(){
       }else{items.push({s:sg.start,e:sg.end,pa:pa,title:sg.ph.name,sub:p.name,pid:p.id,phid:sg.ph.id});}
     });
   });
+  var cnt=$("#agendaCount");if(cnt){var tc=items.filter(function(it){return it.s<=TODAY&&TODAY<it.e;}).length;cnt.textContent=tc?("· "+tc+(tc===1?" tarefa hoje":" tarefas hoje")):"· nada hoje";}
   if(!items.length){box.appendChild(el("div","agempty","Nenhuma tarefa em aberto. Crie coleções ou detalhe as fases em subtarefas com prazo (na aba Projetos)."));return;}
   var maxEnd=items.reduce(function(m,it){return it.e>m?it.e:m;},addDays(TODAY,1));
   var day=new Date(TODAY),rendered=0,truncated=false;
@@ -1092,7 +1108,7 @@ function renderTemplate(){
   STATE.phases.forEach(function(ph){
     var subs=ph.subtasks||[];
     var c=el("div","stpl");c.style.setProperty("--pa",ACCENTS[ph.accent]);
-    var items="";subs.forEach(function(t){items+='<div class="sitem"><span class="sdot"></span><input data-sttext="'+ph.id+'|'+t.id+'" value="'+esc(t.text)+'"><button class="del" data-stdel="'+ph.id+'|'+t.id+'" title="remover">×</button></div>';});
+    var items="";subs.forEach(function(t){items+='<div class="sitem"><span class="sdot"></span><input data-sttext="'+ph.id+'|'+t.id+'" value="'+esc(t.text)+'"><span class="stdur"><input type="number" min="0" data-stdur="'+ph.id+'|'+t.id+'" value="'+(t.days||0)+'" title="dias padrão"> d</span><button class="del" data-stdel="'+ph.id+'|'+t.id+'" title="remover">×</button></div>';});
     c.innerHTML='<div class="sh"><span class="sd"></span><b>'+esc(ph.name)+'</b><span class="cnt">'+subs.length+' subtarefa'+(subs.length===1?"":"s")+'</span></div>'+items+'<div class="sadd"><input data-stadd="'+ph.id+'" placeholder="＋ nova subtarefa e Enter…"></div>';
     stw.appendChild(c);
   });
@@ -1178,7 +1194,7 @@ function celebrate(p){
 
 /* events */
 document.getElementById("nav").addEventListener("click",function(e){var b=e.target.closest("button[data-view]");if(!b)return;switchTo(b.dataset.view);});
-function switchTo(v){document.querySelectorAll("#nav button").forEach(function(x){x.classList.toggle("active",x.dataset.view===v);});["timeline","agenda","projetos","datas","etapas"].forEach(function(k){document.getElementById("view-"+k).hidden=(k!==v);});if(v==="timeline"){renderGantt();renderTimelineDetail();}if(v==="agenda")renderAgenda();}
+function switchTo(v){document.querySelectorAll("#nav button").forEach(function(x){x.classList.toggle("active",x.dataset.view===v);});["timeline","projetos","datas","etapas"].forEach(function(k){document.getElementById("view-"+k).hidden=(k!==v);});if(v==="timeline"){renderGantt();renderTimelineDetail();}}
 
 function touch(p){p.updatedAt=iso(TODAY);if(started(p)&&!p.startedAt)p.startedAt=iso(TODAY);}
 function syncPhaseFromSubs(p,phId){var st=p.phaseState[phId];if(st.subtasks.length){var all=st.subtasks.every(function(x){return x.done;});if(all&&!st.done){st.done=true;st.doneAt=iso(TODAY);}else if(!all&&st.done){st.done=false;st.doneAt=null;}}}
@@ -1203,7 +1219,8 @@ function onEdit(e){
   if(t.dataset.tper!=null){var p2=findPhase(t.dataset.tper);if(p2){p2.perPiece=Math.max(0,+t.value||0);refreshTemplateDerived();renderProjSide();renderDates();}return;}
   if(t.dataset.tname!=null){var p3=findPhase(t.dataset.tname);if(p3){p3.name=t.value;renderProjSide();}return;}
   if(t.dataset.smult!=null){for(var i=0;i<STATE.sizes.length;i++)if(STATE.sizes[i].id===t.dataset.smult)STATE.sizes[i].mult=Math.max(0,+t.value||0);refreshTemplateDerived();renderProjSide();renderDates();return;}
-  if(t.dataset.sttext){var prx=t.dataset.sttext.split("|");var phx=findPhase(prx[0]);if(phx){for(var kx=0;kx<phx.subtasks.length;kx++)if(phx.subtasks[kx].id===prx[1])phx.subtasks[kx].text=t.value;save();var cnt=t.closest(".stpl").querySelector(".cnt");}return;}
+  if(t.dataset.sttext){var prx=t.dataset.sttext.split("|");var phx=findPhase(prx[0]);if(phx){for(var kx=0;kx<phx.subtasks.length;kx++)if(phx.subtasks[kx].id===prx[1])phx.subtasks[kx].text=t.value;save();}return;}
+  if(t.dataset.stdur){var prd2=t.dataset.stdur.split("|");var phd=findPhase(prd2[0]);if(phd){for(var kd=0;kd<phd.subtasks.length;kd++)if(phd.subtasks[kd].id===prd2[1])phd.subtasks[kd].days=Math.max(0,+t.value||0);save();}return;}
   if(t.dataset.lead!=null){var d=findDate(t.dataset.lead);if(d){d.lead=Math.max(0,+t.value||0);renderDates();renderGantt();save();}return;}
 }
 document.addEventListener("input",onEdit);
@@ -1294,6 +1311,13 @@ function findDate(id){for(var i=0;i<STATE.dates.length;i++)if(STATE.dates[i].id=
 var themeBtn=$("#themeBtn");
 themeBtn.addEventListener("click",function(){var cur=document.documentElement.getAttribute("data-theme");var next=cur==="dark"?"light":(cur==="light"?"dark":(matchMedia("(prefers-color-scheme:dark)").matches?"light":"dark"));document.documentElement.setAttribute("data-theme",next);try{localStorage.setItem(KEY+"_theme",next);}catch(e){}renderGantt();});
 try{var th=localStorage.getItem(KEY+"_theme");if(th)document.documentElement.setAttribute("data-theme",th);}catch(e){}
+
+/* agenda sidebar */
+function setAgenda(on){document.body.classList.toggle("agenda-on",on);try{localStorage.setItem(KEY+"_agenda",on?"1":"0");}catch(e){}}
+(function(){var sa=null;try{sa=localStorage.getItem(KEY+"_agenda");}catch(e){}document.body.classList.toggle("agenda-on",sa!=null?sa==="1":(window.innerWidth>=1080));})();
+$("#asideBtn").addEventListener("click",function(){setAgenda(!document.body.classList.contains("agenda-on"));});
+$("#asideClose").addEventListener("click",function(){setAgenda(false);});
+$("#asideBackdrop").addEventListener("click",function(){setAgenda(false);});
 
 var toastT;function toast(m){var t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove("on");},2200);}
 
