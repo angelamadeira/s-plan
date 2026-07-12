@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cronograma de Coleções · Studio Suzu</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#FBF8F1" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1E1A16" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FBF8F1" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1E1A16" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='90'%3E%F0%9F%97%93%EF%B8%8F%3C/text%3E%3C/svg%3E">
 </head>
@@ -339,6 +338,23 @@ section.view{padding:26px 0 70px}
 .moreblk>summary:hover{color:var(--ink)}
 .moreblk .metarow{border-bottom:0;padding-top:6px}
 
+/* subtarefas padrão (Etapas) */
+.stplwrap{display:flex;flex-direction:column;gap:12px;max-width:880px}
+.stpl{background:var(--raised);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);padding:13px 16px}
+.stpl .sh{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.stpl .sh .sd{width:11px;height:11px;border-radius:50%;background:var(--pa);flex:0 0 auto}
+.stpl .sh b{font-weight:500;font-size:14px}
+.stpl .sh .cnt{font-size:11.5px;color:var(--faint);margin-left:2px}
+.stpl .sitem{display:flex;align-items:center;gap:10px;padding:3px 0}
+.stpl .sitem .sdot{width:5px;height:5px;border-radius:50%;background:var(--faint);flex:0 0 auto;margin-left:3px}
+.stpl .sitem input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font-family:inherit;font-size:13px;border-bottom:1px dashed transparent;padding:3px 0}
+.stpl .sitem input:hover,.stpl .sitem input:focus{border-bottom-color:var(--field-line);outline:0}
+.stpl .sitem .del{border:0;background:transparent;color:var(--faint);font-size:17px;line-height:1;padding:0 6px;border-radius:6px;flex:0 0 auto}
+.stpl .sitem .del:hover{color:var(--sango);background:var(--surface)}
+.stpl .sadd{display:flex;margin-top:7px}
+.stpl .sadd input{flex:1;min-width:0;border:1px dashed var(--field-line);background:transparent;color:var(--ink);font-family:inherit;font-size:12.5px;border-radius:7px;padding:6px 10px}
+.stpl .sadd input:focus{outline:0;border-style:solid;border-color:var(--gold)}
+
 /* avisos (capacidade / limite / parado) */
 .avisos{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
 .aviso{display:flex;gap:11px;align-items:flex-start;padding:11px 14px;border-radius:11px;font-size:13px;line-height:1.45;border:1px solid var(--line);background:var(--surface)}
@@ -502,12 +518,13 @@ var KEY="suzu_cronograma_v5";
 var ACCENTS={mizu:"var(--mizu)",fuji:"var(--fuji)",torinoko:"var(--torinoko)",sango:"var(--sango)",matcha:"var(--matcha)",sakura:"var(--sakura)",gold:"var(--gold)"};
 var SIZEIDS=["P","M","G"];
 
+function mkSubs(arr){return arr.map(function(t){return{id:sid(),text:t};});}
 function defPhases(){return[
-  {id:"conceito", name:"Conceito",               accent:"mizu",     base:7,  perPiece:0, production:false, meta:"pesquisa · referências · esboço"},
-  {id:"modelo3d", name:"Molde 3D",               accent:"fuji",     base:10, perPiece:0, production:false, meta:"modelagem autoral em 3D"},
-  {id:"impressao",name:"Impressão 3D",           accent:"torinoko", base:2,  perPiece:2, production:true,  meta:"impressão das peças · acabamento"},
-  {id:"silicone", name:"Molde de silicone",      accent:"sango",    base:3,  perPiece:4, production:true,  meta:"molde · cura · desforma"},
-  {id:"divulgacao",name:"Materiais de divulgação",accent:"matcha",  base:14, perPiece:0, production:false, meta:"fotos · reels · teasers · pré-venda"}
+  {id:"conceito", name:"Conceito",               accent:"mizu",     base:7,  perPiece:0, production:false, meta:"pesquisa · referências · esboço", subtasks:mkSubs(["Pesquisa de referências","Definir tema e formatos","Aprovar conceito"])},
+  {id:"modelo3d", name:"Molde 3D",               accent:"fuji",     base:10, perPiece:0, production:false, meta:"modelagem autoral em 3D", subtasks:mkSubs(["Modelar peças em 3D","Conferir medidas e desforma","Exportar arquivos"])},
+  {id:"impressao",name:"Impressão 3D",           accent:"torinoko", base:2,  perPiece:2, production:true,  meta:"impressão das peças · acabamento", subtasks:mkSubs(["Imprimir masters","Lixar e acabar","Selar superfície"])},
+  {id:"silicone", name:"Molde de silicone",      accent:"sango",    base:3,  perPiece:4, production:true,  meta:"molde · cura · desforma", subtasks:mkSubs(["Preparar a caixa/base","Misturar e verter o silicone","Cura","Desforma e teste"])},
+  {id:"divulgacao",name:"Materiais de divulgação",accent:"matcha",  base:14, perPiece:0, production:false, meta:"fotos · reels · teasers · pré-venda", subtasks:mkSubs(["Fotos das peças","Reels / vídeos","Textos e legendas","Abrir pré-venda"])}
 ];}
 function defSizes(){return[
   {id:"P",label:"Pequeno",hint:"até ~5 cm",mult:0.75},
@@ -532,20 +549,20 @@ function today(){var n=new Date();return new Date(n.getFullYear(),n.getMonth(),n
 var TODAY=today();
 var STATE=load();
 function load(){
-  try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&s.phases&&s.projects&&s.dates&&s.sizes&&s.ref&&s.settings){s.projects.forEach(ensureProject);return s;}}catch(e){}
+  try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&s.phases&&s.projects&&s.dates&&s.sizes&&s.ref&&s.settings){s.phases.forEach(function(ph){if(!ph.subtasks){var d=defPhases().filter(function(x){return x.id===ph.id;})[0];ph.subtasks=d?d.subtasks:[];}});s.projects.forEach(ensureProject);return s;}}catch(e){}
   return{phases:defPhases(),sizes:defSizes(),dates:defDates(),ref:{qty:{P:0,M:1,G:0}},settings:defSettings(),projects:seedProjects()};
 }
+function subsFromTemplate(ph){return (ph.subtasks||[]).map(function(t){return{id:sid(),text:t.text,done:false};});}
 function seedProjects(){
+  var phs=STATE_PHASES();
   var a={id:uid(),name:"Coleção Páscoa 2027",launch:"2027-01-31",accent:"torinoko",qty:{P:0,M:1,G:2},show:true,buffer:null,note:"ovos recheáveis — 3 formatos",phaseState:{},startedAt:"2026-06-01",updatedAt:iso(TODAY)};
-  ensureProject(a);
-  a.phaseState.conceito={done:true, open:false, doneAt:"2026-06-14", subtasks:[{id:sid(),text:"Moodboard japandi",done:true},{id:sid(),text:"Definir 3 formatos",done:true}]};
-  a.phaseState.modelo3d={done:true, open:false, doneAt:"2026-06-30", subtasks:[]};
-  a.phaseState.impressao={done:false,open:true, doneAt:null, subtasks:[{id:sid(),text:"Imprimir master 1",done:true},{id:sid(),text:"Imprimir masters 2 e 3",done:false},{id:sid(),text:"Lixar e selar",done:false}]};
-  // a concluded example so the "aprendizado" (real vs planejado) já aparece
+  phs.forEach(function(ph){a.phaseState[ph.id]={done:false,open:false,doneAt:null,subtasks:subsFromTemplate(ph)};});
+  a.phaseState.conceito.done=true;a.phaseState.conceito.doneAt="2026-06-14";a.phaseState.conceito.subtasks.forEach(function(x){x.done=true;});
+  a.phaseState.modelo3d.done=true;a.phaseState.modelo3d.doneAt="2026-06-30";a.phaseState.modelo3d.subtasks.forEach(function(x){x.done=true;});
+  a.phaseState.impressao.open=true;if(a.phaseState.impressao.subtasks[0])a.phaseState.impressao.subtasks[0].done=true;
   var b={id:uid(),name:"Coleção Namorados 2026",launch:"2026-06-08",accent:"sakura",qty:{P:0,M:2,G:0},show:true,buffer:null,note:"corações — exemplo concluído",phaseState:{},startedAt:"2026-04-10",updatedAt:"2026-06-05"};
-  ensureProject(b);
-  var doneDates={conceito:"2026-04-20",modelo3d:"2026-05-02",impressao:"2026-05-10",silicone:"2026-05-25",divulgacao:"2026-06-05"};
-  STATE_PHASES().forEach(function(ph){b.phaseState[ph.id]={done:true,open:false,doneAt:doneDates[ph.id],subtasks:[]};});
+  var dd={conceito:"2026-04-20",modelo3d:"2026-05-02",impressao:"2026-05-10",silicone:"2026-05-25",divulgacao:"2026-06-05"};
+  phs.forEach(function(ph){var ss=subsFromTemplate(ph);ss.forEach(function(x){x.done=true;});b.phaseState[ph.id]={done:true,open:false,doneAt:dd[ph.id],subtasks:ss};});
   return[a,b];
 }
 function ensureProject(p){
@@ -866,6 +883,17 @@ function renderTemplate(){
   });
   var goal=el("div","goalrow");goal.innerHTML='<span class="gd"></span><b>Lançamento</b><span style="color:var(--muted);font-size:12px">dia zero — a coleção vai ao ar</span>';
   pcfg.appendChild(goal);body.appendChild(pcfg);
+  // subtarefas padrão de cada etapa
+  body.appendChild(el("div","blocklab","Subtarefas padrão de cada etapa — entram em todo projeto novo"));
+  var stw=el("div","stplwrap");
+  STATE.phases.forEach(function(ph){
+    var subs=ph.subtasks||[];
+    var c=el("div","stpl");c.style.setProperty("--pa",ACCENTS[ph.accent]);
+    var items="";subs.forEach(function(t){items+='<div class="sitem"><span class="sdot"></span><input data-sttext="'+ph.id+'|'+t.id+'" value="'+esc(t.text)+'"><button class="del" data-stdel="'+ph.id+'|'+t.id+'" title="remover">×</button></div>';});
+    c.innerHTML='<div class="sh"><span class="sd"></span><b>'+esc(ph.name)+'</b><span class="cnt">'+subs.length+' subtarefa'+(subs.length===1?"":"s")+'</span></div>'+items+'<div class="sadd"><input data-stadd="'+ph.id+'" placeholder="＋ nova subtarefa e Enter…"></div>';
+    stw.appendChild(c);
+  });
+  body.appendChild(stw);
   body.appendChild(el("div","blocklab","Multiplicador por tamanho da peça (afeta só a produção)"));
   var sc=el("div","sizecfg");
   STATE.sizes.forEach(function(s){var card=el("div","sc");card.innerHTML='<div class="nmz"><b>'+esc(s.label)+'</b><span>'+esc(s.hint||"")+'</span></div><div class="mv">×<input type="number" min="0.1" step="0.05" data-smult="'+s.id+'" value="'+s.mult+'"></div>';sc.appendChild(card);});
@@ -886,7 +914,7 @@ function renderTemplate(){
   body.appendChild(el("div","blocklab","Ciclo total por nº de peças de um mesmo tamanho (dias)"));
   var mw=el("div","matrixwrap");mw.id="tplMatrix";mw.innerHTML=matrixHTML();body.appendChild(mw);
   var sum=el("div","tplsum");sum.id="tplSum";sum.innerHTML=sumHTML();body.appendChild(sum);
-  var note=el("p","tplnote");note.innerHTML='Só as etapas de <b>produção</b> (impressão 3D e molde de silicone) crescem por peça; o tamanho multiplica esse acréscimo. Uma coleção pode misturar tamanhos — os campos P/M/G somam. “Aplicar a todos os projetos” zera ajustes manuais de dias e devolve todos ao modelo calculado.';
+  var note=el("p","tplnote");note.innerHTML='Só as etapas de <b>produção</b> (impressão 3D e molde de silicone) crescem por peça; o tamanho multiplica esse acréscimo. Uma coleção pode misturar tamanhos — os campos P/M/G somam. “Aplicar a todos os projetos” devolve as durações ao padrão e adiciona as subtarefas padrão que faltarem em cada coleção (mantém o que você já marcou).';
   body.appendChild(note);
   var ro=$("#tplRefOut");if(ro)ro.innerHTML=esc(qtyDesc(STATE.ref.qty))+' · <b style="color:var(--ink)">'+totalFor(STATE.ref.qty)+'</b> dias';
 }
@@ -945,6 +973,7 @@ function onEdit(e){
   if(t.dataset.tper!=null){var p2=findPhase(t.dataset.tper);if(p2){p2.perPiece=Math.max(0,+t.value||0);refreshTemplateDerived();renderProjSide();renderDates();}return;}
   if(t.dataset.tname!=null){var p3=findPhase(t.dataset.tname);if(p3){p3.name=t.value;renderProjSide();}return;}
   if(t.dataset.smult!=null){for(var i=0;i<STATE.sizes.length;i++)if(STATE.sizes[i].id===t.dataset.smult)STATE.sizes[i].mult=Math.max(0,+t.value||0);refreshTemplateDerived();renderProjSide();renderDates();return;}
+  if(t.dataset.sttext){var prx=t.dataset.sttext.split("|");var phx=findPhase(prx[0]);if(phx){for(var kx=0;kx<phx.subtasks.length;kx++)if(phx.subtasks[kx].id===prx[1])phx.subtasks[kx].text=t.value;save();var cnt=t.closest(".stpl").querySelector(".cnt");}return;}
   if(t.dataset.lead!=null){var d=findDate(t.dataset.lead);if(d){d.lead=Math.max(0,+t.value||0);renderDates();renderGantt();save();}return;}
 }
 document.addEventListener("input",onEdit);
@@ -952,6 +981,7 @@ document.addEventListener("change",function(e){if(e.target.tagName==="SELECT")on
 document.addEventListener("keydown",function(e){
   if(e.key!=="Enter")return;var t=e.target;
   if(t.dataset.subadd){var p=projFromEl(t);if(!p)return;var txt=t.value.trim();if(!txt)return;var st=p.phaseState[t.dataset.subadd];st.subtasks.push({id:sid(),text:txt,done:false});st.open=true;syncPhaseFromSubs(p,t.dataset.subadd);touch(p);renderProjSide();var nc=$('.proj[data-id="'+p.id+'"]');if(nc){var inp=$('[data-subadd="'+t.dataset.subadd+'"]',nc);if(inp)inp.focus();}return;}
+  if(t.dataset.stadd){var phy=findPhase(t.dataset.stadd);if(!phy)return;var tx=t.value.trim();if(!tx)return;phy.subtasks.push({id:sid(),text:tx});save();renderTemplate();var si=document.querySelector('[data-stadd="'+t.dataset.stadd+'"]');if(si)si.focus();return;}
 });
 document.addEventListener("click",function(e){
   var chk=e.target.closest("[data-check]");
@@ -972,6 +1002,8 @@ document.addEventListener("click",function(e){
   if(del){var id2=del.getAttribute("data-del");STATE.projects=STATE.projects.filter(function(p){return p.id!==id2;});renderProjSide();toast("Projeto removido");return;}
   var mk=e.target.closest("[data-mkproj]");
   if(mk){makeProjectFromDate(mk.getAttribute("data-mkproj"));return;}
+  var stdel=e.target.closest("[data-stdel]");
+  if(stdel){var prz=stdel.getAttribute("data-stdel").split("|");var phz=findPhase(prz[0]);if(phz){phz.subtasks=phz.subtasks.filter(function(x){return x.id!==prz[1];});save();renderTemplate();}return;}
   var tprod=e.target.closest("[data-tprod]");
   if(tprod){var ph=findPhase(tprod.getAttribute("data-tprod"));if(ph){ph.production=!ph.production;renderTemplate();renderProjSide();renderDates();}return;}
 });
@@ -981,17 +1013,17 @@ function findSub(p,phId,sId){var st=p.phaseState[phId];if(!st)return null;for(va
 
 $("#addProj").addEventListener("click",function(){
   var p={id:uid(),name:"Nova coleção",launch:iso(addDays(TODAY,60)),accent:"mizu",qty:{P:0,M:1,G:0},show:true,buffer:null,overrides:{},note:"",phaseState:{},startedAt:null,updatedAt:iso(TODAY)};
-  ensureProject(p);STATE.projects.push(p);renderProjSide();switchTo("projetos");
+  ensureProject(p);STATE.phases.forEach(function(ph){p.phaseState[ph.id].subtasks=subsFromTemplate(ph);});STATE.projects.push(p);renderProjSide();switchTo("projetos");
   var last=$('.proj[data-id="'+p.id+'"]');if(last){last.scrollIntoView({behavior:"smooth",block:"center"});var i=$('input[data-f="name"]',last);if(i){i.focus();i.select();}}
 });
 $("#addDate").addEventListener("click",function(){STATE.dates.push({id:"d"+Math.random().toString(36).slice(2,7),name:"Nova data",holiday:iso(addDays(TODAY,120)),lead:4,porte:"m",accent:"mizu",note:""});renderDates();renderGantt();save();});
-$("#applyAll").addEventListener("click",function(){STATE.projects.forEach(function(p){p.overrides={};});renderProjSide();toast("Modelo calculado aplicado a todos os projetos");});
+$("#applyAll").addEventListener("click",function(){STATE.projects.forEach(function(p){p.overrides={};STATE.phases.forEach(function(ph){var st=p.phaseState[ph.id];if(!st||st.done)return;var have={};st.subtasks.forEach(function(x){have[x.text.trim().toLowerCase()]=1;});(ph.subtasks||[]).forEach(function(t){if(!have[t.text.trim().toLowerCase()])st.subtasks.push({id:sid(),text:t.text,done:false});});});});renderProjSide();toast("Padrões e subtarefas aplicados a todos os projetos");});
 
 function makeProjectFromDate(id){
   var d=findDate(id);if(!d)return;
   var launchBy=addDays(parse(d.holiday),-d.lead*7);
   var p={id:uid(),name:"Coleção "+d.name,launch:iso(launchBy),accent:d.accent||"mizu",qty:{P:STATE.ref.qty.P,M:STATE.ref.qty.M,G:STATE.ref.qty.G},show:true,buffer:null,overrides:{},note:d.note||"",phaseState:{},startedAt:null,updatedAt:iso(TODAY)};
-  ensureProject(p);STATE.projects.push(p);renderProjSide();switchTo("projetos");toast("Projeto criado a partir de "+d.name);
+  ensureProject(p);STATE.phases.forEach(function(ph){p.phaseState[ph.id].subtasks=subsFromTemplate(ph);});STATE.projects.push(p);renderProjSide();switchTo("projetos");toast("Projeto criado a partir de "+d.name);
   var last=$('.proj[data-id="'+p.id+'"]');if(last)last.scrollIntoView({behavior:"smooth",block:"center"});
 }
 function findProj(id){for(var i=0;i<STATE.projects.length;i++)if(STATE.projects[i].id===id)return STATE.projects[i];return null;}
