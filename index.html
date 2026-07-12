@@ -251,7 +251,7 @@ section.view{padding:26px 0 70px}
 .tl .vv{justify-self:end;font-variant-numeric:tabular-nums;color:var(--ink)}
 .tl.hi .tt{color:var(--ink)}
 .tl.line{border-left:1px dashed var(--line);height:8px;margin-left:9px;padding:0;grid-template-columns:1fr}
-.dctrl{display:flex;align-items:center;gap:9px;margin-top:2px;border-top:1px solid var(--hair);padding-top:11px}
+.dctrl{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:2px;border-top:1px solid var(--hair);padding-top:11px}
 .dctrl .lead{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
 .dctrl .lead input{width:42px;text-align:center;font-family:inherit;font-size:13px;color:var(--ink);background:var(--field);border:1px solid var(--field-line);border-radius:7px;padding:4px;font-variant-numeric:tabular-nums}
 .dctrl .btn{margin-left:auto}
@@ -345,6 +345,25 @@ section.view{padding:26px 0 70px}
 .moreblk>summary:hover{color:var(--ink)}
 .moreblk .metarow{border-bottom:0;padding-top:6px}
 
+/* etapas phase-config fields: labels hidden on desktop (the header row labels them), shown when stacked */
+.pcfg .fld{display:block;min-width:0}
+.pcfg .fld .ni{width:100%}
+.pcfg .fld .fl{display:none}
+/* phone: stop the config table from clipping — stack the row so every control stays visible */
+@media (max-width:600px){
+  .pcfg{overflow-x:visible}
+  .pcfg .hd{display:none}
+  .pcfg .hd,.pcfg .phrow,.pcfg .goalrow{min-width:0}
+  .pcfg .phrow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 13px;padding:14px 16px}
+  .pcfg .phrow .td{align-self:center}
+  .pcfg .phrow .nm{flex:1 1 180px;order:0}
+  .pcfg .phrow .fld{display:flex;flex-direction:column;gap:3px;flex:0 0 auto}
+  .pcfg .phrow .fld .fl{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+  .pcfg .phrow .ni{width:66px}
+  .pcfg .phrow .togsize{align-self:flex-end}
+  .pcfg .phrow .calc{margin-left:auto;align-self:flex-end}
+  .matrix{min-width:400px}
+}
 @media (max-width:640px){
   .wrap{padding:0 15px}
   .stat{flex-basis:calc(50% - 5px)}
@@ -761,8 +780,8 @@ function renderTemplate(){
   STATE.phases.forEach(function(ph){
     var r=el("div","phrow");r.style.setProperty("--pa",ACCENTS[ph.accent]);
     r.innerHTML='<span class="td"></span><div class="nm"><input class="tn" data-tname="'+ph.id+'" value="'+esc(ph.name)+'"><small>'+esc(ph.meta||"")+'</small></div>'+
-      '<input class="ni" type="number" min="0" step="0.5" data-tbase="'+ph.id+'" value="'+ph.base+'" title="dias fixos">'+
-      '<input class="ni'+(ph.production?"":" mut")+'" type="number" min="0" step="0.5" data-tper="'+ph.id+'" value="'+ph.perPiece+'" title="dias por peça (×tamanho)">'+
+      '<label class="fld"><span class="fl">Base</span><input class="ni" type="number" min="0" step="0.5" data-tbase="'+ph.id+'" value="'+ph.base+'" title="dias fixos"></label>'+
+      '<label class="fld"><span class="fl">Por peça</span><input class="ni'+(ph.production?"":" mut")+'" type="number" min="0" step="0.5" data-tper="'+ph.id+'" value="'+ph.perPiece+'" title="dias por peça (×tamanho)"></label>'+
       '<button class="togsize'+(ph.production?" on":"")+'" data-tprod="'+ph.id+'">'+(ph.production?"por peça":"fixo")+'</button>'+
       '<span class="calc num" id="calc_'+ph.id+'">'+calcPhaseDays(ph,STATE.ref.qty)+' d</span>';
     pcfg.appendChild(r);
