@@ -81,6 +81,8 @@ section.view{padding:26px 0 70px}
 .btn:hover{background:var(--surface)}
 .btn svg{width:15px;height:15px}
 .btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.danger{background:var(--sango);color:#3a2f28;border-color:var(--sango)}
+.btn.danger:hover{background:color-mix(in srgb,var(--sango) 86%,#000)}
 .btn.ghost{border-color:transparent;background:transparent;color:var(--muted);padding:7px 10px}
 .btn.ghost:hover{color:var(--ink);background:var(--surface)}
 .btn.sm{padding:6px 11px;font-size:12.5px;border-radius:8px}
@@ -587,6 +589,7 @@ section.view{padding:26px 0 70px}
 
 <div class="toast" id="toast"></div>
 <div class="celeb" id="celeb" hidden><div class="celeb-card" id="celebCard"></div></div>
+<div class="celeb" id="confirmModal" hidden><div class="celeb-card" id="confirmCard"></div></div>
 
 <script>
 (function(){
@@ -1060,6 +1063,14 @@ function celebComparison(p){
   return '<div class="cmphd">Seguiu as estimativas?</div><div class="celeb-tot">Planejado <b>'+cp.total+'d</b> · Real <b>'+rt+'d</b> · <span class="'+(pct>0?"over":(pct<0?"under":""))+'">'+(pct>=0?"+":"")+pct+'%</span> — '+verdict+'</div>'+
     '<table class="celeb-tbl"><thead><tr><th>Fase</th><th>Plan.</th><th>Real</th><th>Dif.</th></tr></thead><tbody>'+rows+'</tbody></table>';
 }
+var pendingDel=null;
+function askDelete(id){
+  var p=findProj(id);if(!p)return;
+  pendingDel=id;
+  var card=$("#confirmCard");if(!card)return;
+  card.innerHTML='<div class="celeb-emoji" style="font-size:34px">🗑️</div><h3>Remover esta coleção?</h3><p>Você vai apagar <b>'+esc(p.name)+'</b> de vez — com as fases, subtarefas e o histórico. Isso <b>não dá para desfazer</b>.<br><span style="font-size:12px;color:var(--muted)">Se você só quer tirá-la da linha do tempo, use <b>Arquivar</b> — ela fica guardada em Concluídos.</span></p><div class="celeb-actions"><button class="btn" data-delcancel>Cancelar</button><button class="btn danger" data-delok>Remover de vez</button></div>';
+  $("#confirmModal").hidden=false;
+}
 function celebrate(p){
   if(selProj===p.id)selProj=null;
   var card=$("#celebCard");if(!card)return;
@@ -1102,6 +1113,7 @@ function onEdit(e){
 document.addEventListener("input",onEdit);
 document.addEventListener("change",function(e){if(e.target.tagName==="SELECT")onEdit(e);});
 document.addEventListener("keydown",function(e){
+  if(e.key==="Escape"){if(!$("#confirmModal").hidden){pendingDel=null;$("#confirmModal").hidden=true;return;}if(!$("#celeb").hidden){$("#celeb").hidden=true;return;}}
   if(e.key!=="Enter")return;var t=e.target;
   if(t.dataset.subadd){var p=projFromEl(t);if(!p)return;var txt=t.value.trim();if(!txt)return;var st=p.phaseState[t.dataset.subadd];st.subtasks.push({id:sid(),text:txt,done:false});st.open=true;syncPhaseFromSubs(p,t.dataset.subadd);touch(p);renderProjSide();var nc=$('.proj[data-id="'+p.id+'"]');if(nc){var inp=$('[data-subadd="'+t.dataset.subadd+'"]',nc);if(inp)inp.focus();}return;}
   if(t.dataset.stadd){var phy=findPhase(t.dataset.stadd);if(!phy)return;var tx=t.value.trim();if(!tx)return;phy.subtasks.push({id:sid(),text:tx});save();renderTemplate();var si=document.querySelector('[data-stadd="'+t.dataset.stadd+'"]');if(si)si.focus();return;}
@@ -1137,7 +1149,12 @@ document.addEventListener("click",function(e){
   if(ccl){$("#celeb").hidden=true;return;}
   if(e.target.id==="celeb"){e.target.hidden=true;return;}
   var del=e.target.closest("[data-del]");
-  if(del){var id2=del.getAttribute("data-del");STATE.projects=STATE.projects.filter(function(p){return p.id!==id2;});renderProjSide();toast("Projeto removido");return;}
+  if(del){askDelete(del.getAttribute("data-del"));return;}
+  var dok=e.target.closest("[data-delok]");
+  if(dok){if(pendingDel){STATE.projects=STATE.projects.filter(function(p){return p.id!==pendingDel;});if(selProj===pendingDel)selProj=null;pendingDel=null;renderProjSide();toast("Coleção removida");}$("#confirmModal").hidden=true;return;}
+  var dcancel=e.target.closest("[data-delcancel]");
+  if(dcancel){pendingDel=null;$("#confirmModal").hidden=true;return;}
+  if(e.target.id==="confirmModal"){pendingDel=null;e.target.hidden=true;return;}
   var mk=e.target.closest("[data-mkproj]");
   if(mk){makeProjectFromDate(mk.getAttribute("data-mkproj"));return;}
   var stdel=e.target.closest("[data-stdel]");
