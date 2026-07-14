@@ -307,6 +307,12 @@ body.agenda-on .aside{transform:none}
 .gchip .gc{width:9px;height:9px;border-radius:50%;background:var(--pa);flex:0 0 auto}
 .gchip.off{color:var(--faint);text-decoration:line-through}
 .gchip.off .gc{background:var(--faint)!important}
+.gcascade{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:20px;padding:5px 11px 5px 8px;font-size:12px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;white-space:nowrap}
+.gcascade .gcsw{width:26px;height:15px;border-radius:9px;background:var(--line);position:relative;flex:0 0 auto;transition:background .15s}
+.gcascade .gcsw::after{content:"";position:absolute;top:2px;left:2px;width:11px;height:11px;border-radius:50%;background:var(--bg);transition:transform .15s}
+.gcascade.on{color:var(--ink);border-color:color-mix(in srgb,var(--matcha) 60%,var(--line))}
+.gcascade.on .gcsw{background:var(--matcha)}
+.gcascade.on .gcsw::after{transform:translateX(11px)}
 .gchip.gall{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:500}
 .gchip.gall.on{background:var(--surface);color:var(--muted);border-color:var(--line);font-weight:400}
 .gantt2{display:flex}
@@ -642,7 +648,7 @@ function defSizes(){return[
   {id:"M",label:"Médio",  hint:"~6–10 cm", mult:1},
   {id:"G",label:"Grande", hint:"11 cm +",  mult:1.4}
 ];}
-function defSettings(){return{buffer:5, wip:2, stale:7};}
+function defSettings(){return{buffer:5, wip:2, stale:7, cascade:false};}
 function defDates(){return[
   {id:"d_pais26", name:"Dia dos Pais",        holiday:"2026-08-09", lead:4, porte:"m", accent:"mizu",     note:"presentes em chocolate"},
   {id:"d_criancas26",name:"Dia das Crianças", holiday:"2026-10-12", lead:4, porte:"m", accent:"fuji",     note:"formas lúdicas, bombons"},
@@ -742,6 +748,9 @@ function computeProject(p){
   var buffer=Math.max(0,diffDays(prodEnd,launch));
   return{segs:segs,total:total,launch:launch,buffer:buffer,prodEnd:prodEnd,start:start};
 }
+function phaseIndex(phid){for(var i=0;i<STATE.phases.length;i++)if(STATE.phases[i].id===phid)return i;return -1;}
+/* empurra as etapas POSTERIORES (na ordem do pipeline) por delta dias — só quando o modo "empurrar" está ligado */
+function shiftLater(p,phid,delta){if(!delta||!p.plan)return;var idx=phaseIndex(phid);for(var i=idx+1;i<STATE.phases.length;i++){var pp=p.plan[STATE.phases[i].id];if(pp){pp.s=iso(addDays(parse(pp.s),delta));pp.e=iso(addDays(parse(pp.e),delta));}}}
 function prodWindow(cp){var s=null,e=null;cp.segs.forEach(function(sg){if(sg.ph.production){if(s==null||sg.start<s)s=new Date(sg.start);if(e==null||sg.end>e)e=new Date(sg.end);}});return s?{s:s,e:e}:null;}
 function phaseDone(p,ph){var st=p.phaseState[ph.id];return!!(st&&st.done);}
 function currentIndex(p){for(var i=0;i<STATE.phases.length;i++)if(!phaseDone(p,STATE.phases[i]))return i;return STATE.phases.length;}
@@ -1013,7 +1022,7 @@ function renderGantt(){
   var allShown=actProjs.length&&actProjs.every(function(p){return p.show;});
   var chips='<span class="fl">Mostrar</span><button class="gchip gall'+(allShown?" on":"")+'" data-gall>Ver tudo</button>';
   actProjs.forEach(function(p){chips+='<button class="gchip'+(p.show?"":" off")+'" data-gfilter="'+p.id+'" style="--pa:'+ACCENTS[p.accent||"mizu"]+'"><span class="gc"></span>'+esc(p.name)+'</button>';});
-  top.innerHTML='<div class="gfilters">'+(actProjs.length?chips:'<span class="fl" style="color:var(--faint)">nenhuma coleção ativa — veja as concluídas na aba Projetos</span>')+'</div>';
+  top.innerHTML='<div class="gfilters">'+(actProjs.length?chips:'<span class="fl" style="color:var(--faint)">nenhuma coleção ativa — veja as concluídas na aba Projetos</span>')+'</div>'+(actProjs.length?'<button class="gcascade'+(STATE.settings.cascade?" on":"")+'" data-cascade aria-pressed="'+(STATE.settings.cascade?"true":"false")+'" title="Ligado: ao mover ou esticar uma etapa, as etapas seguintes vão junto (mantêm a sequência). Desligado: cada etapa se move sozinha."><span class="gcsw"></span>Empurrar etapas seguintes</button>':'');
   wrap.appendChild(top);
   var vis=actProjs.filter(function(p){return p.show;});
   if(!vis.length){wrap.appendChild(el("div","gempty",actProjs.length?"Nenhuma coleção selecionada acima.":"As coleções concluídas ficam em Projetos › Concluídos."));return;}
@@ -1051,7 +1060,7 @@ function renderGantt(){
       function up(){
         document.removeEventListener("pointermove",mv);document.removeEventListener("pointerup",up);
         try{node.releasePointerCapture(ev.pointerId);}catch(_){}
-        if(node._moved){if(mode==="mile"){p.launch=iso(nl);}else{pl.s=iso(ns);pl.e=iso(ne);}touch(p);save();renderProjSide();}
+        if(node._moved){if(mode==="mile"){p.launch=iso(nl);}else{pl.s=iso(ns);pl.e=iso(ne);if(STATE.settings.cascade){if(mode==="m")shiftLater(p,phid,diffDays(s0,ns));else if(mode==="r")shiftLater(p,phid,diffDays(e0,ne));}}touch(p);save();renderProjSide();}
       }
       document.addEventListener("pointermove",mv);document.addEventListener("pointerup",up);
     });
@@ -1232,8 +1241,8 @@ document.addEventListener("change",function(e){
   var card=t.closest&&t.closest(".proj");if(!card)return;
   var p=findProj(card.dataset.id);if(!p)return;
   if(t.dataset.pstart){ensurePlan(p);var a=p.plan[t.dataset.pstart];if(a&&t.value){a.s=t.value;if(parse(a.s)>=parse(a.e))a.e=iso(addDays(parse(a.s),1));}touch(p);renderProjSide();return;}
-  if(t.dataset.pend){ensurePlan(p);var b=p.plan[t.dataset.pend];if(b&&t.value){var e2=iso(addDays(parse(t.value),1));if(parse(e2)<=parse(b.s))e2=iso(addDays(parse(b.s),1));b.e=e2;}touch(p);renderProjSide();return;}
-  if(t.dataset.pdays){ensurePlan(p);var c=p.plan[t.dataset.pdays];if(c){var nd=Math.max(1,parseInt(t.value||1,10));c.e=iso(addDays(parse(c.s),nd));}touch(p);renderProjSide();return;}
+  if(t.dataset.pend){ensurePlan(p);var b=p.plan[t.dataset.pend];if(b&&t.value){var be0=parse(b.e);var e2=iso(addDays(parse(t.value),1));if(parse(e2)<=parse(b.s))e2=iso(addDays(parse(b.s),1));b.e=e2;if(STATE.settings.cascade)shiftLater(p,t.dataset.pend,diffDays(be0,parse(e2)));}touch(p);renderProjSide();return;}
+  if(t.dataset.pdays){ensurePlan(p);var c=p.plan[t.dataset.pdays];if(c){var ce0=parse(c.e);var nd=Math.max(1,parseInt(t.value||1,10));c.e=iso(addDays(parse(c.s),nd));if(STATE.settings.cascade)shiftLater(p,t.dataset.pdays,diffDays(ce0,parse(c.e)));}touch(p);renderProjSide();return;}
   if(t.dataset.projstart){ensurePlan(p);if(t.value){var cur=computeProject(p).start,delta=diffDays(cur,parse(t.value));if(delta){STATE.phases.forEach(function(ph){var pp=p.plan[ph.id];if(pp){pp.s=iso(addDays(parse(pp.s),delta));pp.e=iso(addDays(parse(pp.e),delta));}});}}touch(p);renderProjSide();return;}
   if(t.dataset.f==="launch"){p.launch=t.value;touch(p);renderProjSide();return;}
   if(t.dataset.f==="buffer"){p.buffer=(t.value===""?null:Math.max(0,+t.value));touch(p);renderProjSide();return;}
@@ -1253,6 +1262,8 @@ document.addEventListener("click",function(e){
   if(sdel){var p3=projFromEl(sdel);if(p3){var pr3=sdel.getAttribute("data-subdel").split("|");var st3=p3.phaseState[pr3[0]];var sx=null;st3.subtasks.forEach(function(x){if(x.id===pr3[1])sx=x;});confirmAction({title:"Remover subtarefa?",body:'“<b>'+esc(sx?sx.text:"")+'</b>” será removida desta coleção.',okLabel:"Remover",onConfirm:function(){st3.subtasks=st3.subtasks.filter(function(x){return x.id!==pr3[1];});syncPhaseFromSubs(p3,pr3[0]);touch(p3);renderProjSide();}});}return;}
   var stog=e.target.closest("[data-subtog]");
   if(stog){var p4=projFromEl(stog);if(p4){var st4=p4.phaseState[stog.getAttribute("data-subtog")];st4.open=!st4.open;renderProjects();renderTimelineDetail();save();}return;}
+  var gcasc=e.target.closest("[data-cascade]");
+  if(gcasc){STATE.settings.cascade=!STATE.settings.cascade;renderGantt();save();toast(STATE.settings.cascade?"Empurrar etapas seguintes: ligado":"Empurrar etapas seguintes: desligado");return;}
   var gall=e.target.closest("[data-gall]");
   if(gall){STATE.projects.forEach(function(p){p.show=true;});renderGantt();save();return;}
   var gf=e.target.closest("[data-gfilter]");
