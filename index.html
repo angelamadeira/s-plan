@@ -61,6 +61,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .icobtn{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--line);background:var(--raised);border-radius:50%;color:var(--muted)}
 .icobtn:hover{color:var(--ink);border-color:var(--field-line)}
 body.agenda-on #asideBtn{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#settingsBtn.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 
 .nav{display:flex;gap:2px;padding:14px 0 0}
 .nav button{border:0;background:transparent;color:var(--muted);font-size:14px;font-weight:400;padding:9px 15px;border-radius:9px 9px 0 0;letter-spacing:.01em;position:relative}
@@ -575,12 +576,12 @@ body.agenda-on .aside{transform:none}
   <div class="today-pill">Hoje · <b id="todayLabel">—</b></div>
   <button class="icobtn" id="themeBtn" title="Alternar tema" aria-label="Alternar tema"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg></button>
   <button class="icobtn" id="asideBtn" title="Agenda do dia" aria-label="Agenda do dia" aria-pressed="false"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></button>
+  <button class="icobtn" id="settingsBtn" title="Ajustes — etapas, subtarefas e folga" aria-label="Ajustes" aria-pressed="false"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
 </div>
 <div class="navbar"><div class="wrap"><nav class="nav" id="nav">
   <button data-view="timeline" class="active">Linha do tempo</button>
   <button data-view="projetos">Projetos <span class="c" id="cProj"></span></button>
   <button data-view="datas">Datas temáticas <span class="c" id="cDatas"></span></button>
-  <button data-view="etapas">Etapas padrão</button>
 </nav></div></div></div>
 
 <main class="wrap">
@@ -611,8 +612,9 @@ body.agenda-on .aside{transform:none}
 
   <section class="view" id="view-etapas" hidden>
     <div class="vhead">
+      <div class="lead"><h2>Ajustes</h2><p>O fluxo de etapas, as subtarefas padrão e a folga de segurança — valem como padrão para toda coleção nova.</p></div>
       <div class="actions">
-        <button class="btn" id="applyAll"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>Aplicar a todos os projetos</button>
+        <button class="btn ghost" id="applyAll"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>Sincronizar subtarefas nos projetos</button>
       </div>
     </div>
     <div id="etapasBody"></div>
@@ -648,7 +650,7 @@ function defSizes(){return[
   {id:"M",label:"Médio",  hint:"~6–10 cm", mult:1},
   {id:"G",label:"Grande", hint:"11 cm +",  mult:1.4}
 ];}
-function defSettings(){return{buffer:5, wip:2, stale:7, cascade:false};}
+function defSettings(){return{buffer:5, cascade:false};}
 function defDates(){return[
   {id:"d_pais26", name:"Dia dos Pais",        holiday:"2026-08-09", lead:4, porte:"m", accent:"mizu",     note:"presentes em chocolate"},
   {id:"d_criancas26",name:"Dia das Crianças", holiday:"2026-10-12", lead:4, porte:"m", accent:"fuji",     note:"formas lúdicas, bombons"},
@@ -780,15 +782,12 @@ function learning(){
   return{n:s.length,factor:avg,pct:Math.round((avg-1)*100)};
 }
 
-/* warnings — capacidade, limite, parado */
+/* aviso — só produção sobreposta (mesmas mãos/impressora) */
 function computeWarnings(){
   var active=STATE.projects.filter(function(p){return !isFiled(p);}),w=[];
   var iv=[];active.forEach(function(p){var pw=prodWindow(computeProject(p));if(pw)iv.push({p:p,s:pw.s,e:pw.e});});
   for(var i=0;i<iv.length;i++)for(var j=i+1;j<iv.length;j++){var a=iv[i],b=iv[j];if(a.s<b.e&&b.s<a.e){var os=a.s>b.s?a.s:b.s,oe=a.e<b.e?a.e:b.e;
     w.push({tone:"late",ic:icAlert(),t:"<b>"+esc(a.p.name)+"</b> e <b>"+esc(b.p.name)+"</b> vão estar em produção ao mesmo tempo ("+fmt(os)+"–"+fmt(oe)+"). Como são as mesmas mãos e a mesma impressora, uma pode atrasar — adiante a de maior prioridade."});}}
-  var inProd=active.filter(function(p){return started(p);}).length;
-  if(inProd>STATE.settings.wip)w.push({tone:"warn",ic:icLayers(),t:"Você tem <b>"+inProd+"</b> coleções em andamento, acima do limite de <b>"+STATE.settings.wip+"</b> que você definiu. Talvez valha terminar uma antes de abrir outra."});
-  active.forEach(function(p){if(started(p)){var ds=daysSince(p.updatedAt);if(ds!=null&&ds>STATE.settings.stale)w.push({tone:"warn",ic:icPause(),t:"<b>"+esc(p.name)+"</b> está parada há <b>"+ds+" dias</b> sem nenhuma fase marcada. Ainda está de pé?"});}});
   return w;
 }
 
@@ -870,7 +869,7 @@ function renderAgenda(){
     });
   });
   var cnt=$("#agendaCount");if(cnt){var tc=items.filter(function(it){return it.s<=TODAY&&TODAY<it.e;}).length;cnt.textContent=tc?("· "+tc+(tc===1?" tarefa hoje":" tarefas hoje")):"· nada hoje";}
-  if(!items.length){box.appendChild(el("div","agempty","Nenhuma etapa em aberto. Crie uma coleção na aba Planejamento."));return;}
+  if(!items.length){box.appendChild(el("div","agempty","Nenhuma etapa em aberto. Crie uma coleção na aba Projetos."));return;}
   var maxEnd=items.reduce(function(m,it){return it.e>m?it.e:m;},addDays(TODAY,1));
   var day=new Date(TODAY),rendered=0,truncated=false;
   while(day<=maxEnd){
@@ -1143,9 +1142,7 @@ function renderTemplate(){
   body.appendChild(el("div","blocklab","Ajustes do ateliê"));
   var set=el("div","setgrid");
   set.innerHTML=
-    '<label class="setf"><span class="sn">Folga de segurança padrão</span><span class="sh">dias de respiro antes do lançamento, pra imprevisto</span><span class="sv"><input type="number" min="0" data-set="buffer" value="'+STATE.settings.buffer+'"> dias</span></label>'+
-    '<label class="setf"><span class="sn">Coleções em produção ao mesmo tempo</span><span class="sh">acima disso, a ferramenta avisa que você pode estar sobrecarregada</span><span class="sv"><input type="number" min="1" data-set="wip" value="'+STATE.settings.wip+'"> no máx.</span></label>'+
-    '<label class="setf"><span class="sn">Avisar se uma coleção ficar parada</span><span class="sh">sem nenhuma fase marcada por tantos dias</span><span class="sv"><input type="number" min="1" data-set="stale" value="'+STATE.settings.stale+'"> dias</span></label>';
+    '<label class="setf"><span class="sn">Folga de segurança padrão</span><span class="sh">dias de respiro entre o fim da produção e o lançamento, pra imprevisto</span><span class="sv"><input type="number" min="0" data-set="buffer" value="'+STATE.settings.buffer+'"> dias</span></label>';
   body.appendChild(set);
   // aprendizado — guardamos real × planejado para, mais pra frente, sugerir os tempos
   body.appendChild(el("div","blocklab","Aprendizado — real × planejado (guardado para estimar os tempos depois)"));
@@ -1209,7 +1206,8 @@ function celebrate(p){
 
 /* events */
 document.getElementById("nav").addEventListener("click",function(e){var b=e.target.closest("button[data-view]");if(!b)return;switchTo(b.dataset.view);});
-function switchTo(v){document.querySelectorAll("#nav button").forEach(function(x){x.classList.toggle("active",x.dataset.view===v);});["timeline","projetos","datas","etapas"].forEach(function(k){document.getElementById("view-"+k).hidden=(k!==v);});if(v==="timeline"){renderGantt();renderTimelineDetail();}}
+document.getElementById("settingsBtn").addEventListener("click",function(){switchTo(document.getElementById("view-etapas").hidden?"etapas":"timeline");});
+function switchTo(v){document.querySelectorAll("#nav button").forEach(function(x){x.classList.toggle("active",x.dataset.view===v);});["timeline","projetos","datas","etapas"].forEach(function(k){document.getElementById("view-"+k).hidden=(k!==v);});var sb=document.getElementById("settingsBtn");if(sb){sb.classList.toggle("on",v==="etapas");sb.setAttribute("aria-pressed",v==="etapas"?"true":"false");}if(v==="timeline"){renderGantt();renderTimelineDetail();}}
 
 function touch(p){p.updatedAt=iso(TODAY);if(started(p)&&!p.startedAt)p.startedAt=iso(TODAY);}
 function syncPhaseFromSubs(p,phId){var st=p.phaseState[phId];if(st.subtasks.length){var all=st.subtasks.every(function(x){return x.done;});if(all&&!st.done){st.done=true;st.doneAt=iso(TODAY);}else if(!all&&st.done){st.done=false;st.doneAt=null;}}}
@@ -1217,7 +1215,7 @@ function syncPhaseFromSubs(p,phId){var st=p.phaseState[phId];if(st.subtasks.leng
 function onEdit(e){
   var t=e.target;
   if(t.dataset.refq){STATE.ref.qty[t.dataset.refq]=Math.max(0,parseInt(t.value||0,10));setRefControls();refreshTemplateDerived();renderDates();save();return;}
-  if(t.dataset.set){STATE.settings[t.dataset.set]=Math.max(t.dataset.set==="wip"||t.dataset.set==="stale"?1:0,parseInt(t.value||0,10));renderSummary();renderProjects();renderGantt();renderDates();save();return;}
+  if(t.dataset.set){STATE.settings[t.dataset.set]=Math.max(0,parseInt(t.value||0,10));renderSummary();renderProjects();renderGantt();renderDates();save();return;}
   var card=t.closest(".proj");
   if(card){var p=findProj(card.dataset.id);if(!p)return;
     if(t.dataset.f==="accent"){p.accent=t.value;renderProjects();renderGantt();save();return;}
@@ -1317,7 +1315,7 @@ $("#addProj").addEventListener("click",function(){
   var last=$('.proj[data-id="'+p.id+'"]');if(last){last.scrollIntoView({behavior:"smooth",block:"center"});var i=$('input[data-f="name"]',last);if(i){i.focus();i.select();}}
 });
 $("#addDate").addEventListener("click",function(){STATE.dates.push({id:"d"+Math.random().toString(36).slice(2,7),name:"Nova data",holiday:iso(addDays(TODAY,120)),lead:4,porte:"m",accent:"mizu",note:""});renderDates();renderGantt();save();});
-$("#applyAll").addEventListener("click",function(){STATE.projects.forEach(function(p){p.overrides={};STATE.phases.forEach(function(ph){var st=p.phaseState[ph.id];if(!st||st.done)return;var have={};st.subtasks.forEach(function(x){have[x.text.trim().toLowerCase()]=1;});(ph.subtasks||[]).forEach(function(t){if(!have[t.text.trim().toLowerCase()])st.subtasks.push({id:sid(),text:t.text,done:false});});});});renderProjSide();toast("Padrões e subtarefas aplicados a todos os projetos");});
+$("#applyAll").addEventListener("click",function(){STATE.projects.forEach(function(p){STATE.phases.forEach(function(ph){var st=p.phaseState[ph.id];if(!st||st.done)return;var have={};st.subtasks.forEach(function(x){have[x.text.trim().toLowerCase()]=1;});(ph.subtasks||[]).forEach(function(t){if(!have[t.text.trim().toLowerCase()])st.subtasks.push({id:sid(),text:t.text,done:false});});});});renderProjSide();toast("Subtarefas padrão sincronizadas nos projetos");});
 
 function makeProjectFromDate(id){
   var d=findDate(id);if(!d)return;
