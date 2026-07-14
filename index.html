@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#ffffff">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 </head>
 <body>
 <title>Suzu · Cronograma de Coleções</title>
@@ -161,7 +159,7 @@ section.view{padding:26px 0 70px}
 .subwrap{padding:0 6px 12px 39px;display:flex;flex-direction:column;gap:6px}
 .subitem{display:flex;align-items:center;gap:9px}
 .scheck{width:17px;height:17px;border-radius:5px;border:1.5px solid var(--field-line);background:var(--field);display:grid;place-items:center;color:transparent;padding:0;flex:0 0 auto}
-.scheck.on{background:var(--matcha);border-color:transparent;color:#3a2f28}
+.scheck.on{background:var(--ink);border-color:transparent;color:var(--bg)}
 .scheck svg{width:10px;height:10px}
 .stext{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font-family:inherit;font-size:13px;border-bottom:1px dashed transparent;padding:3px 0}
 .stext:hover,.stext:focus{border-bottom-color:var(--field-line);outline:0}
@@ -212,6 +210,9 @@ section.view{padding:26px 0 70px}
 .agitem .atx b{font-weight:500;font-size:14px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .agitem .atx span{font-size:11.5px;color:var(--muted)}
 .agitem .adate{font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums;white-space:nowrap;flex:0 0 auto}
+.agitem .afc{flex:0 0 auto;width:34px;box-sizing:content-box;border:1px solid var(--field-line);background:var(--field);color:var(--muted);border-radius:7px;padding:5px 6px;font-family:inherit;font-size:11px;font-variant-numeric:tabular-nums}
+.agitem .afc:focus{outline:0;border-color:var(--gold);color:var(--ink)}
+.agitem .atx b .over{display:inline-block;font-size:10px;font-weight:600;color:#fff;background:var(--sango);border-radius:20px;padding:1px 7px;vertical-align:1px;margin-left:4px}
 .agempty{color:var(--muted);font-size:13px;padding:4px 0 10px}
 .agmore{color:var(--faint);font-size:12px;padding:16px 0 4px;text-align:center}
 
@@ -232,6 +233,8 @@ body.agenda-on .aside{transform:none}
 .aside .agdate{margin-bottom:9px}
 @media (min-width:1080px){ body.agenda-on{padding-right:344px} }
 @media (max-width:1079px){ body.agenda-on .aside-backdrop{opacity:1;pointer-events:auto} }
+.subitem .sdue{flex:0 0 auto;width:34px;box-sizing:content-box;border:1px solid var(--field-line);background:var(--field);color:var(--muted);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:11px;font-variant-numeric:tabular-nums}
+.subitem .sdue:focus{outline:0;border-color:var(--gold);color:var(--ink)}
 .subitem .sdel{display:grid;place-items:center;padding:4px;border-radius:6px;color:var(--faint);background:transparent;border:0;flex:0 0 auto}
 .subitem .sdel svg{width:14px;height:14px}
 .subitem .sdel:hover{color:var(--sango);background:var(--surface)}
@@ -320,6 +323,8 @@ body.agenda-on .aside{transform:none}
 .gnames{flex:0 0 176px;border-right:1px solid var(--line);background:var(--raised);position:relative;z-index:2}
 .gnhead{height:54px;border-bottom:1px solid var(--line)}
 .gnrow{height:46px;display:flex;align-items:center;gap:9px;padding:0 14px;border-bottom:1px solid var(--hair);font-size:13px;overflow:hidden}
+.gnrow .nmz{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gconf{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:var(--sango);color:#fff;font-size:11px;font-weight:700;flex:0 0 auto;line-height:1}
 .gnrow:last-child{border-bottom:0}
 .gnrow .gnd{width:8px;height:8px;border-radius:50%;background:var(--pa);flex:0 0 auto}
 .gnrow .nmz{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -407,7 +412,12 @@ body.agenda-on .aside{transform:none}
 /* etapas */
 .pcfg{background:var(--raised);border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow);overflow-x:auto;max-width:880px}
 .pcfg .hd,.phrow,.pcfg .goalrow{min-width:320px}
-.pcfg .hd,.phrow{display:grid;grid-template-columns:15px minmax(0,1fr) 96px;gap:13px;align-items:center;padding:11px 18px}
+.pcfg .hd,.phrow{display:grid;grid-template-columns:15px minmax(0,1fr) 96px 26px;gap:13px;align-items:center;padding:11px 18px}
+.phrow .phdel{width:26px;height:26px;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:16px;line-height:1;cursor:pointer;padding:0}
+.phrow .phdel:hover{color:var(--sango);border-color:color-mix(in srgb,var(--sango) 45%,var(--line))}
+.phadd{display:flex;align-items:center;gap:8px;padding:10px 18px;border-top:1px solid var(--hair)}
+.phadd input{flex:1;border:0;border-bottom:1px dashed var(--field-line);background:transparent;color:var(--ink);font-family:inherit;font-size:13.5px;padding:5px 0}
+.phadd input:focus{outline:0;border-bottom-color:var(--gold)}
 .pcfg .hd{border-bottom:1px solid var(--line);font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--muted)}
 .pcfg .hd span{text-align:center}.pcfg .hd .l{text-align:left}.pcfg .hd .r{text-align:right}
 .phrow{border-bottom:1px solid var(--hair)}
@@ -465,6 +475,10 @@ body.agenda-on .aside{transform:none}
 
 /* action banner — the one thing that matters per card */
 .statusbar{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:11px;margin:2px 0 6px;background:var(--surface);border:1px solid var(--line)}
+.conflict{display:flex;align-items:center;gap:10px;padding:9px 13px;border-radius:11px;margin:0 0 8px;background:color-mix(in srgb,var(--sango) 15%,var(--surface));border:1px solid color-mix(in srgb,var(--sango) 48%,var(--line))}
+.conflict .ci{width:20px;height:20px;flex:0 0 auto;color:var(--sango)}.conflict .ci svg{width:20px;height:20px}
+.conflict .ct{flex:1;min-width:0;font-size:12.5px;color:var(--ink)}
+.conflict .btn{flex:0 0 auto}
 .statusbar .ic{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex:0 0 auto;background:color-mix(in srgb,var(--tone,var(--madeira)) 26%,var(--surface));color:var(--ink)}
 .statusbar .ic svg{width:16px;height:16px}
 .statusbar .tx{min-width:0;flex:1}
@@ -593,8 +607,8 @@ body.agenda-on .aside{transform:none}
   <div class="spacer"></div>
   <div class="today-pill">Hoje · <b id="todayLabel">—</b></div>
   <button class="icobtn" id="themeBtn" title="Alternar tema" aria-label="Alternar tema"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg></button>
-  <button class="icobtn" id="asideBtn" title="Agenda do dia" aria-label="Agenda do dia" aria-pressed="false"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></button>
   <button class="icobtn" id="settingsBtn" title="Ajustes — etapas, subtarefas e folga" aria-label="Ajustes" aria-pressed="false"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+  <button class="icobtn" id="asideBtn" title="Agenda do dia" aria-label="Agenda do dia" aria-pressed="false"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></button>
 </div>
 <div class="navbar"><div class="wrap"><nav class="nav" id="nav">
   <button data-view="timeline" class="active">Linha do tempo</button>
@@ -771,8 +785,12 @@ function computeProject(p){
 function phaseIndex(phid){for(var i=0;i<STATE.phases.length;i++)if(STATE.phases[i].id===phid)return i;return -1;}
 /* empurra as etapas POSTERIORES (na ordem do pipeline) por delta dias — só quando o modo "empurrar" está ligado */
 function shiftLater(p,phid,delta){if(!delta||!p.plan)return;var idx=phaseIndex(phid);for(var i=idx+1;i<STATE.phases.length;i++){var pp=p.plan[STATE.phases[i].id];if(pp){pp.s=iso(addDays(parse(pp.s),delta));pp.e=iso(addDays(parse(pp.e),delta));}}}
-/* "empurrar etapas seguintes" ligado: reencaixa as POSTERIORES logo após a etapa editada, preservando a duração de cada uma (mantém a sequência sempre colada) */
-function repackTail(p,phid){if(!p.plan)return;var idx=phaseIndex(phid);if(idx<0)return;var prevEnd=parse(p.plan[phid].e);for(var i=idx+1;i<STATE.phases.length;i++){var pp=p.plan[STATE.phases[i].id];if(!pp)continue;var dur=Math.max(1,diffDays(parse(pp.s),parse(pp.e)));pp.s=iso(prevEnd);pp.e=iso(addDays(prevEnd,dur));prevEnd=parse(pp.e);}}
+/* "empurrar etapas seguintes" ligado = CONSUMIR FOLGA: só empurra a posterior se ela encavalar; respeita os intervalos deixados de propósito */
+function cascadePush(p,phid){if(!p.plan)return;var idx=phaseIndex(phid);if(idx<0)return;var prevEnd=parse(p.plan[phid].e);for(var i=idx+1;i<STATE.phases.length;i++){var pp=p.plan[STATE.phases[i].id];if(!pp)continue;var s=parse(pp.s);if(s<prevEnd){var dur=Math.max(1,diffDays(s,parse(pp.e)));pp.s=iso(prevEnd);pp.e=iso(addDays(prevEnd,dur));}prevEnd=parse(pp.e);}}
+/* correção de 1 clique: reencaixa TODA a cadeia colada, terminando na folga antes do lançamento, preservando as durações */
+function repackFromLaunch(p){if(!p.plan)return;var phs=STATE.phases,end=addDays(parse(p.launch),-effBuffer(p));for(var i=phs.length-1;i>=0;i--){var pp=p.plan[phs[i].id];if(!pp)continue;var dur=Math.max(1,diffDays(parse(pp.s),parse(pp.e)));var s=addDays(end,-dur);pp.s=iso(s);pp.e=iso(end);end=s;}}
+/* detecta datas fora de sincronia: etapas encavaladas (fora de ordem) ou produção terminando depois do lançamento */
+function projectConflicts(p){ensurePlan(p);var phs=STATE.phases,overlap=false,prevEnd=null,maxEnd=null;for(var i=0;i<phs.length;i++){var pp=p.plan[phs[i].id];if(!pp)continue;var s=parse(pp.s),e=parse(pp.e);if(prevEnd&&s<prevEnd)overlap=true;prevEnd=e;if(maxEnd==null||e>maxEnd)maxEnd=e;}var overrun=maxEnd&&maxEnd>parse(p.launch);return{any:!!(overlap||overrun),overlap:overlap,overrun:!!overrun};}
 function prodWindow(cp){var s=null,e=null;cp.segs.forEach(function(sg){if(sg.ph.production){if(s==null||sg.start<s)s=new Date(sg.start);if(e==null||sg.end>e)e=new Date(sg.end);}});return s?{s:s,e:e}:null;}
 function phaseDone(p,ph){var st=p.phaseState[ph.id];return!!(st&&st.done);}
 function currentIndex(p){for(var i=0;i<STATE.phases.length;i++)if(!phaseDone(p,STATE.phases[i]))return i;return STATE.phases.length;}
@@ -858,11 +876,12 @@ function stat(n,label,cls){var s=el("div","stat"+(cls?" "+cls:""));s.innerHTML='
 function renderProjects(){
   var wrap=$("#projList");wrap.innerHTML="";
   var active=STATE.projects.filter(function(p){return !isFiled(p);});
-  var done=STATE.projects.filter(isFiled);
-  $("#cProj").textContent=STATE.projects.length?STATE.projects.length:"";
-  if(!active.length&&!done.length){wrap.appendChild(el("div","gempty","Nenhum projeto ainda. Crie um projeto ou gere um a partir de uma data temática."));}
+  var concl=STATE.projects.filter(function(p){return isDone(p);});
+  var arch=STATE.projects.filter(function(p){return p.archived&&!isDone(p);});
+  $("#cProj").textContent=active.length?active.length:"";
+  if(!STATE.projects.length){wrap.appendChild(el("div","gempty","Nenhum projeto ainda. Crie um projeto ou gere um a partir de uma data temática."));}
   active.slice().sort(function(a,b){return computeProject(a).start-computeProject(b).start;}).forEach(function(p){wrap.appendChild(projectCard(p));});
-  renderDone(done);
+  renderFiled(concl,arch);
 }
 var selProj=null;
 var GZOOM=(function(){try{return localStorage.getItem("suzu_cronograma_gzoom")||"semana";}catch(e){return "semana";}})();
@@ -886,36 +905,47 @@ function renderAgenda(){
     var cp=computeProject(p),pa=ACCENTS[p.accent||"mizu"];
     cp.segs.forEach(function(sg){
       if(phaseDone(p,sg.ph))return;
-      if(sg.subs&&sg.subs.some(function(s){return s.days>0;})){
-        sg.subs.forEach(function(s){if(s.days>0&&!s.sub.done)items.push({s:s.start,e:s.end,pa:pa,title:s.sub.text,sub:p.name+" · "+sg.ph.name,pid:p.id,phid:sg.ph.id,sid:s.sub.id});});
-      }else{items.push({s:sg.start,e:sg.end,pa:pa,title:sg.ph.name,sub:p.name,pid:p.id,phid:sg.ph.id});}
+      var st=p.phaseState[sg.ph.id],opens=st.subtasks.filter(function(x){return !x.done;});
+      if(opens.length){
+        opens.forEach(function(t){
+          var day,over=false;
+          if(t.due){var dd=parse(t.due);if(dd<TODAY){day=new Date(TODAY);over=true;}else day=dd;}
+          else day=(sg.start>TODAY?new Date(sg.start):new Date(TODAY));
+          items.push({day:day,pa:pa,title:t.text,sub:p.name+" · "+sg.ph.name,pid:p.id,phid:sg.ph.id,sid:t.id,due:t.due||"",over:over});
+        });
+      }else{
+        var day2=(sg.start>TODAY?new Date(sg.start):new Date(TODAY));
+        items.push({day:day2,pa:pa,title:sg.ph.name,sub:p.name,pid:p.id,phid:sg.ph.id,phaseLevel:true});
+      }
     });
   });
-  var cnt=$("#agendaCount");if(cnt){var tc=items.filter(function(it){return it.s<=TODAY&&TODAY<it.e;}).length;cnt.textContent=tc?("· "+tc+(tc===1?" tarefa hoje":" tarefas hoje")):"· nada hoje";}
-  if(!items.length){box.appendChild(el("div","agempty","Nenhuma etapa em aberto. Crie uma coleção na aba Projetos."));return;}
-  var maxEnd=items.reduce(function(m,it){return it.e>m?it.e:m;},addDays(TODAY,1));
+  var cnt=$("#agendaCount");if(cnt){var tc=items.filter(function(it){return diffDays(TODAY,it.day)===0;}).length;cnt.textContent=tc?("· "+tc+(tc===1?" tarefa hoje":" tarefas hoje")):"· nada hoje";}
+  if(!items.length){box.appendChild(el("div","agempty","Nada em aberto. Crie uma coleção na aba Projetos."));return;}
+  var maxDay=items.reduce(function(m,it){return it.day>m?it.day:m;},addDays(TODAY,1));
   var day=new Date(TODAY),rendered=0,truncated=false;
-  while(day<=maxEnd){
+  while(day<=maxDay){
     var isToday=diffDays(TODAY,day)===0;
-    var di=items.filter(function(it){return it.s<=day&&day<it.e;});
+    var di=items.filter(function(it){return diffDays(it.day,day)===0;});
     if(di.length||isToday){
-      if(rendered>=40){truncated=true;break;}
+      if(rendered>=45){truncated=true;break;}
       var lbl=isToday?"Hoje":(diffDays(TODAY,day)===1?"Amanhã":dowShort(day));
       var dsec=el("div","agday"+(isToday?" today":""));
       dsec.innerHTML='<div class="agdate">'+lbl+' <span class="dnum">'+day.getDate()+" "+MES[day.getMonth()]+'</span></div>';
       if(!di.length)dsec.appendChild(el("div","agempty","Nada programado para hoje. 🌿"));
       di.forEach(function(it){
-        var startsToday=diffDays(it.s,day)===0;
         var ag=el("div","agitem");ag.style.setProperty("--pa",it.pa);
-        var chk=it.sid?('data-asub="'+it.pid+'|'+it.phid+'|'+it.sid+'"'):('data-aphase="'+it.pid+'|'+it.phid+'"');
-        ag.innerHTML='<button class="agcheck" '+chk+' aria-label="marcar como pronto"></button><span class="adot"></span><div class="atx"><b>'+esc(it.title)+'</b><span>'+esc(it.sub)+(startsToday?"":" · em andamento")+'</span></div><span class="adate">'+fmt(it.s)+"–"+fmt(it.e)+'</span>';
+        if(it.phaseLevel){
+          ag.innerHTML='<button class="agcheck" data-aphase="'+it.pid+'|'+it.phid+'" aria-label="marcar fase como pronta"></button><span class="adot"></span><div class="atx"><b>'+esc(it.title)+'</b><span>'+esc(it.sub)+'</span></div>';
+        }else{
+          ag.innerHTML='<button class="agcheck" data-asub="'+it.pid+'|'+it.phid+'|'+it.sid+'" aria-label="concluir subtarefa"></button><span class="adot"></span><div class="atx"><b>'+esc(it.title)+(it.over?' <span class="over">atrasada</span>':'')+'</b><span>'+esc(it.sub)+'</span></div><input class="afc" type="date" data-aforecast="'+it.pid+'|'+it.phid+'|'+it.sid+'" value="'+esc(it.due)+'" title="previsão de conclusão">';
+        }
         dsec.appendChild(ag);
       });
       box.appendChild(dsec);rendered++;
     }
     day=addDays(day,1);
   }
-  if(truncated)box.appendChild(el("div","agmore","…e mais tarefas adiante."));
+  if(truncated)box.appendChild(el("div","agmore","…e mais adiante."));
 }
 function statusBanner(p,cp){
   var ci=currentIndex(p),toStart=diffDays(TODAY,cp.start),toLaunch=diffDays(TODAY,cp.launch);
@@ -938,11 +968,11 @@ function projectCard(p,opts){
   var h=el("div","ph");h.style.setProperty("--pa",pa);
   h.innerHTML='<div class="swatch"></div><div class="nm"><input class="tt" data-f="name" value="'+esc(p.name)+'" aria-label="Nome do projeto"/>'+
     '<div class="sub">Lança <b class="num">'+fmtY(cp.launch)+'</b></div></div>'+
-    '<select class="corsel" data-f="accent" aria-label="Cor" title="Cor do projeto">'+accentOptions(p.accent)+'</select>'+
     (detail?'':'<button class="collbtn" data-collapse aria-label="Recolher ou expandir">'+icChev()+'</button>');
   card.appendChild(h);
   var b=el("div","body");
   b.appendChild(banner(ban));
+  if(!isFiled(p)){var cf=projectConflicts(p);if(cf.any){var cmsg=(cf.overlap&&cf.overrun)?"Etapas encavaladas e produção passando do lançamento.":cf.overlap?"Etapas fora de sequência (encavaladas).":"A produção termina depois do lançamento.";var cw=el("div","conflict");cw.innerHTML='<span class="ci">'+icAlert()+'</span><span class="ct">'+cmsg+'</span><button class="btn sm" data-repack="'+p.id+'" title="Reencaixa as etapas em sequência, terminando na folga antes do lançamento (mantém as durações)">Reencaixar</button>';b.appendChild(cw);}}
   var cb=el("div","cbody");
   var ph=el("div","phases");
   cp.segs.forEach(function(sg,i){ph.appendChild(phaseBlock(p,sg,i,ci));});
@@ -985,6 +1015,7 @@ function phaseBlock(p,sg,i,ci){
       var it=el("div","subitem");
       it.innerHTML='<button class="scheck'+(t.done?" on":"")+'" data-sub="'+sg.ph.id+'|'+t.id+'" aria-pressed="'+t.done+'" aria-label="concluir subtarefa">'+(t.done?icCheck():"")+'</button>'+
         '<div class="smid"><input class="stext'+(t.done?" done":"")+'" data-subtext="'+sg.ph.id+'|'+t.id+'" value="'+esc(t.text)+'"></div>'+
+        '<input class="sdue" type="date" data-subdue="'+sg.ph.id+'|'+t.id+'" value="'+(t.due||"")+'" title="previsão de conclusão (aparece na agenda do dia)">'+
         '<button class="sdel" data-subdel="'+sg.ph.id+'|'+t.id+'" title="remover" aria-label="remover subtarefa">'+icX()+'</button>';
       sw.appendChild(it);
     });
@@ -999,27 +1030,31 @@ function phaseBlock(p,sg,i,ci){
   }
   return block;
 }
-function renderDone(done){
+function renderFiled(concl,arch){
   var wrap=$("#doneWrap");wrap.innerHTML="";
-  if(!done.length)return;
-  var open=wrap._open||false;
-  var sec=el("div","donesec");
-  var head=el("button","donehead"+(open?" open":""));head.innerHTML=icChev()+"Concluídos · "+done.length;
-  head.addEventListener("click",function(){wrap._open=!open;renderProjects();});
-  sec.appendChild(head);
-  if(open){
-    var list=el("div","donelist");
-    done.slice().sort(function(a,b){return parse(b.launch)-parse(a.launch);}).forEach(function(p){
-      var dn=isDone(p),cp=computeProject(p),rt=realTotal(p);
-      var real="";if(dn&&rt!=null){var pct=Math.round((rt/cp.total-1)*100);real='<span class="realtag '+(pct>5?"over":(pct<-5?"under":"onpar"))+'">levou '+rt+'d · planejado '+cp.total+'d · '+(pct>=0?"+":"")+pct+'%</span>';}
-      var c=el("div","donecard"+(dn?"":" arch"));c.dataset.id=p.id;
-      c.innerHTML='<span class="dchk">'+(dn?icCheck():icArchive())+'</span><div class="nmz"><b>'+esc(p.name)+'</b><span>'+(dn?"Concluída · lançou "+fmtY(cp.launch):"Arquivada · não estava na timeline")+'</span>'+real+'</div>'+
-        '<button class="btn sm" data-reopen="'+p.id+'">Reabrir</button><button class="btn ghost sm" data-del="'+p.id+'" aria-label="remover">'+icTrash()+'</button>';
-      list.appendChild(c);
-    });
-    sec.appendChild(list);
+  function section(title,items,openKey,dn){
+    if(!items.length)return;
+    var open=wrap[openKey]||false;
+    var sec=el("div","donesec");
+    var head=el("button","donehead"+(open?" open":""));head.innerHTML=icChev()+title+" · "+items.length;
+    head.addEventListener("click",function(){wrap[openKey]=!open;renderProjects();});
+    sec.appendChild(head);
+    if(open){
+      var list=el("div","donelist");
+      items.slice().sort(function(a,b){return parse(b.launch)-parse(a.launch);}).forEach(function(p){
+        var cp=computeProject(p),rt=realTotal(p);
+        var real="";if(dn&&rt!=null){var pct=Math.round((rt/cp.total-1)*100);real='<span class="realtag '+(pct>5?"over":(pct<-5?"under":"onpar"))+'">levou '+rt+'d · planejado '+cp.total+'d · '+(pct>=0?"+":"")+pct+'%</span>';}
+        var c=el("div","donecard"+(dn?"":" arch"));c.dataset.id=p.id;
+        c.innerHTML='<span class="dchk">'+(dn?icCheck():icArchive())+'</span><div class="nmz"><b>'+esc(p.name)+'</b><span>'+(dn?"Concluída · lançou "+fmtY(cp.launch):"Arquivada")+'</span>'+real+'</div>'+
+          '<button class="btn sm" data-reopen="'+p.id+'">Reabrir</button><button class="btn ghost sm" data-del="'+p.id+'" aria-label="remover">'+icTrash()+'</button>';
+        list.appendChild(c);
+      });
+      sec.appendChild(list);
+    }
+    wrap.appendChild(sec);
   }
-  wrap.appendChild(sec);
+  section("Concluídos",concl,"_openDone",true);
+  section("Arquivados",arch,"_openArch",false);
 }
 function accentOptions(cur){var names={mizu:"Mizu (azul)",fuji:"Fuji (lilás)",torinoko:"Torinoko (areia)",sango:"Sango (coral)",matcha:"Matcha (verde)",sakura:"Sakura (rosa)",gold:"Gold (dourado)"};var o="";for(var k in names){o+='<option value="'+k+'"'+(cur===k?" selected":"")+'>'+names[k]+'</option>';}return o;}
 
@@ -1041,15 +1076,12 @@ function renderGantt(){
   var top=el("div","gantt-top");
   var actProjs=STATE.projects.filter(function(p){return !isFiled(p);});
   if(selProj&&!actProjs.some(function(p){return p.id===selProj;}))selProj=null;
-  var allShown=actProjs.length&&actProjs.every(function(p){return p.show;});
-  var chips='<span class="fl">Mostrar</span><button class="gchip gall'+(allShown?" on":"")+'" data-gall>Ver tudo</button>';
-  actProjs.forEach(function(p){chips+='<button class="gchip'+(p.show?"":" off")+'" data-gfilter="'+p.id+'" style="--pa:'+ACCENTS[p.accent||"mizu"]+'"><span class="gc"></span>'+esc(p.name)+'</button>';});
   var zoomCtl='<div class="gzoom" role="group" aria-label="Zoom da linha do tempo">'+["dia","semana","mes"].map(function(z){return '<button class="gzb'+(GZOOM===z?" on":"")+'" data-zoom="'+z+'">'+(z==="dia"?"Dia":z==="semana"?"Semana":"Mês")+'</button>';}).join("")+'</div>';
-  var cascadeBtn=actProjs.length?'<button class="gcascade'+(STATE.settings.cascade?" on":"")+'" data-cascade aria-pressed="'+(STATE.settings.cascade?"true":"false")+'" title="Ligado: ao mover ou esticar uma etapa, as etapas seguintes vão junto (mantêm a sequência). Desligado: cada etapa se move sozinha."><span class="gcsw"></span>Empurrar etapas seguintes</button>':'';
-  top.innerHTML='<div class="gfilters">'+(actProjs.length?chips:'<span class="fl" style="color:var(--faint)">nenhuma coleção ativa — veja as concluídas na aba Projetos</span>')+'</div><div class="gright">'+cascadeBtn+zoomCtl+'</div>';
+  var cascadeBtn=actProjs.length?'<button class="gcascade'+(STATE.settings.cascade?" on":"")+'" data-cascade aria-pressed="'+(STATE.settings.cascade?"true":"false")+'" title="Ligado: ao mover uma etapa, as seguintes se ajustam se encavalarem (mantêm a sequência). Desligado: cada etapa se move sozinha."><span class="gcsw"></span>Empurrar etapas seguintes</button>':'';
+  top.innerHTML='<div class="gfilters">'+(actProjs.length?'':'<span class="fl" style="color:var(--faint)">nenhuma coleção ativa — veja as concluídas na aba Projetos</span>')+'</div><div class="gright">'+cascadeBtn+zoomCtl+'</div>';
   wrap.appendChild(top);
-  var vis=actProjs.filter(function(p){return p.show;});
-  if(!vis.length){wrap.appendChild(el("div","gempty",actProjs.length?"Nenhuma coleção selecionada acima.":"As coleções concluídas ficam em Projetos › Concluídos."));return;}
+  var vis=actProjs.slice();
+  if(!vis.length){wrap.appendChild(el("div","gempty","As coleções concluídas ficam em Projetos › Concluídos."));return;}
   vis=vis.slice().sort(function(a,b){return parse(a.launch)-parse(b.launch);});
   var comps=vis.map(computeProject);
   var min=comps[0].start,max=comps[0].launch;
@@ -1085,11 +1117,12 @@ function renderGantt(){
         node.style.left=x(ns)+"px";node.style.width=Math.max(3,diffDays(ns,ne)*PX)+"px";
         node.title=p.name+" · "+fmt(ns)+" – "+fmt(ne)+" ("+diffDays(ns,ne)+"d)";
         tip.textContent=fmt(ns)+" – "+fmt(ne)+" · "+diffDays(ns,ne)+"d";
+        if(STATE.settings.cascade&&phid){var track=node.parentNode,prevEnd=new Date(ne),idx=phaseIndex(phid);for(var i=idx+1;i<STATE.phases.length;i++){var fid=STATE.phases[i].id,fbar=track.querySelector('.gbar[data-ph="'+fid+'"]'),fp=p.plan[fid];if(!fbar||!fp)continue;var fs=parse(fp.s),fe=parse(fp.e),fdur=Math.max(1,diffDays(fs,fe));if(fs<prevEnd){fs=new Date(prevEnd);fe=addDays(fs,fdur);}fbar.style.left=x(fs)+"px";fbar.style.width=Math.max(3,diffDays(fs,fe)*PX)+"px";prevEnd=new Date(fe);}}
       }
       function up(){
         document.removeEventListener("pointermove",mv);document.removeEventListener("pointerup",up);
         try{node.releasePointerCapture(ev.pointerId);}catch(_){}tip.style.display="none";
-        if(node._moved){if(mode==="mile"){p.launch=iso(nl);}else{pl.s=iso(ns);pl.e=iso(ne);if(STATE.settings.cascade)repackTail(p,phid);}touch(p);save();renderProjSide();}
+        if(node._moved){if(mode==="mile"){p.launch=iso(nl);}else{pl.s=iso(ns);pl.e=iso(ne);if(STATE.settings.cascade)cascadePush(p,phid);}touch(p);save();renderProjSide();}
       }
       document.addEventListener("pointermove",mv);document.addEventListener("pointerup",up);
     });
@@ -1097,7 +1130,7 @@ function renderGantt(){
   var HEAD=54,ROW=46,rowsH=vis.length*ROW;
   var g2=el("div","gantt2");
   var names=el("div","gnames");names.appendChild(el("div","gnhead"));
-  vis.forEach(function(p){var nr=el("div","gnrow"+(isDone(p)?" donerow":"")+(p.id===selProj?" sel":""));nr.setAttribute("data-gopen",p.id);nr.style.setProperty("--pa",ACCENTS[p.accent||"mizu"]);nr.innerHTML='<span class="gnd"></span><span class="nmz">'+esc(p.name)+'</span>';names.appendChild(nr);});
+  vis.forEach(function(p){var nr=el("div","gnrow"+(isDone(p)?" donerow":"")+(p.id===selProj?" sel":""));nr.setAttribute("data-gopen",p.id);nr.style.setProperty("--pa",ACCENTS[p.accent||"mizu"]);var cfl=projectConflicts(p).any?'<span class="gconf" title="Datas fora de sincronia — abra em Projetos para reencaixar">!</span>':'';nr.innerHTML='<span class="gnd"></span><span class="nmz">'+esc(p.name)+'</span>'+cfl;names.appendChild(nr);});
   g2.appendChild(names);
   var scroll=el("div","gscroll"),canvas=el("div","gcanvas");canvas.style.width=W+"px";
   var band=el("div","gband");band.style.width=W+"px";
@@ -1112,7 +1145,7 @@ function renderGantt(){
   vis.forEach(function(p,ri){
     var cp=comps[ri],ci=currentIndex(p);var row=el("div","grow"+(p.id===selProj?" sel":""));row.setAttribute("data-gopen",p.id);row.style.setProperty("--pa",ACCENTS[p.accent||"mizu"]);var track=el("div","gtrack");
     for(var dk=0;dk<cp.segs.length-1;dk++){var da=cp.segs[dk],db=cp.segs[dk+1];var dax=x(da.end),dbx=x(db.start);if(dbx-dax>3){var dep=el("div","gdep");dep.style.left=dax+"px";dep.style.width=(dbx-dax)+"px";dep.title="a etapa seguinte começa depois desta";track.appendChild(dep);}}
-    cp.segs.forEach(function(sg,i){var isd=phaseDone(p,sg.ph);var bw=Math.max(3,sg.days*PX);var bar=el("div","gbar"+(isd?" done":"")+(i===ci?" cur":""));bar.style.left=x(sg.start)+"px";bar.style.width=bw+"px";bar.style.background=ACCENTS[sg.ph.accent];bar.title=p.name+" · "+sg.ph.name+": "+fmt(sg.start)+" – "+fmt(sg.end)+" ("+sg.days+"d)"+(isd?" ✓":"");if(isd&&bw>18)bar.innerHTML='<span class="gck">'+icCheck()+'</span>';attachDrag(bar,"bar",p,sg.ph.id);track.appendChild(bar);});
+    cp.segs.forEach(function(sg,i){var isd=phaseDone(p,sg.ph);var bw=Math.max(3,sg.days*PX);var bar=el("div","gbar"+(isd?" done":"")+(i===ci?" cur":""));bar.dataset.ph=sg.ph.id;bar.style.left=x(sg.start)+"px";bar.style.width=bw+"px";bar.style.background=ACCENTS[sg.ph.accent];bar.title=p.name+" · "+sg.ph.name+": "+fmt(sg.start)+" – "+fmt(sg.end)+" ("+sg.days+"d)"+(isd?" ✓":"");if(isd&&bw>18)bar.innerHTML='<span class="gck">'+icCheck()+'</span>';attachDrag(bar,"bar",p,sg.ph.id);track.appendChild(bar);});
     if(cp.buffer>0){var buf=el("div","gbuf");buf.style.left=x(cp.prodEnd)+"px";buf.style.width=Math.max(2,cp.buffer*PX)+"px";buf.title="Folga de segurança: "+cp.buffer+" dias";track.appendChild(buf);}
     var mile=el("div","gmile");mile.style.left=x(cp.launch)+"px";mile.title="Lançamento "+fmtY(cp.launch)+" · arraste para mudar";attachDrag(mile,"mile",p,null);track.appendChild(mile);
     row.appendChild(track);rows.appendChild(row);
@@ -1152,14 +1185,17 @@ function renderTemplate(){
   var body=$("#etapasBody");body.innerHTML="";
   body.appendChild(el("div","blocklab","Tempo de cada etapa (dias) — o padrão de toda coleção nova"));
   var pcfg=el("div","pcfg");
-  var hd=el("div","hd");hd.innerHTML='<span></span><span class="l">Etapa</span><span class="r">Dias</span>';
+  var hd=el("div","hd");hd.innerHTML='<span></span><span class="l">Etapa</span><span class="r">Dias</span><span></span>';
   pcfg.appendChild(hd);
   STATE.phases.forEach(function(ph){
     var r=el("div","phrow");r.style.setProperty("--pa",ACCENTS[ph.accent]);
     r.innerHTML='<span class="td"></span><div class="nm"><input class="tn" data-tname="'+ph.id+'" value="'+esc(ph.name)+'"><small>'+esc(ph.meta||"")+'</small></div>'+
-      '<input class="ni" type="number" min="0" step="1" data-tbase="'+ph.id+'" value="'+ph.base+'" title="dias desta etapa">';
+      '<input class="ni" type="number" min="0" step="1" data-tbase="'+ph.id+'" value="'+ph.base+'" title="dias desta etapa">'+
+      (STATE.phases.length>1?'<button class="phdel" data-phdel="'+ph.id+'" title="remover esta etapa" aria-label="remover etapa">×</button>':'<span></span>');
     pcfg.appendChild(r);
   });
+  var padd=el("div","phadd");padd.innerHTML='<span class="td" style="background:var(--faint)"></span><input data-phadd placeholder="＋ nova etapa e Enter…">';
+  pcfg.appendChild(padd);
   var goal=el("div","goalrow");goal.innerHTML='<span class="gd"></span><b>Lançamento</b><span style="color:var(--muted);font-size:12px">dia zero — a coleção vai ao ar</span>';
   pcfg.appendChild(goal);body.appendChild(pcfg);
   // subtarefas de cada etapa (lista de conferência, sem prazo)
@@ -1271,11 +1307,13 @@ document.addEventListener("input",onEdit);
 document.addEventListener("change",function(e){
   var t=e.target;if(!t.dataset)return;
   if(t.tagName==="SELECT"){onEdit(e);return;}
+  if(t.dataset.aforecast){var af=t.dataset.aforecast.split("|"),afp=findProj(af[0]);if(afp){var afs=findSub(afp,af[1],af[2]);if(afs){afs.due=t.value||null;touch(afp);save();renderProjSide();}}return;}
   var card=t.closest&&t.closest(".proj");if(!card)return;
   var p=findProj(card.dataset.id);if(!p)return;
-  if(t.dataset.pstart){ensurePlan(p);var a=p.plan[t.dataset.pstart];if(a&&t.value){a.s=t.value;if(parse(a.s)>=parse(a.e))a.e=iso(addDays(parse(a.s),1));if(STATE.settings.cascade)repackTail(p,t.dataset.pstart);}touch(p);renderProjSide();return;}
-  if(t.dataset.pend){ensurePlan(p);var b=p.plan[t.dataset.pend];if(b&&t.value){var e2=iso(addDays(parse(t.value),1));if(parse(e2)<=parse(b.s))e2=iso(addDays(parse(b.s),1));b.e=e2;if(STATE.settings.cascade)repackTail(p,t.dataset.pend);}touch(p);renderProjSide();return;}
-  if(t.dataset.pdays){ensurePlan(p);var c=p.plan[t.dataset.pdays];if(c){var nd=Math.max(1,parseInt(t.value||1,10));c.e=iso(addDays(parse(c.s),nd));if(STATE.settings.cascade)repackTail(p,t.dataset.pdays);}touch(p);renderProjSide();return;}
+  if(t.dataset.subdue){var pr3=t.dataset.subdue.split("|"),sd=findSub(p,pr3[0],pr3[1]);if(sd){sd.due=t.value||null;touch(p);save();renderProjSide();}return;}
+  if(t.dataset.pstart){ensurePlan(p);var a=p.plan[t.dataset.pstart];if(a&&t.value){a.s=t.value;if(parse(a.s)>=parse(a.e))a.e=iso(addDays(parse(a.s),1));if(STATE.settings.cascade)cascadePush(p,t.dataset.pstart);}touch(p);renderProjSide();return;}
+  if(t.dataset.pend){ensurePlan(p);var b=p.plan[t.dataset.pend];if(b&&t.value){var e2=iso(addDays(parse(t.value),1));if(parse(e2)<=parse(b.s))e2=iso(addDays(parse(b.s),1));b.e=e2;if(STATE.settings.cascade)cascadePush(p,t.dataset.pend);}touch(p);renderProjSide();return;}
+  if(t.dataset.pdays){ensurePlan(p);var c=p.plan[t.dataset.pdays];if(c){var nd=Math.max(1,parseInt(t.value||1,10));c.e=iso(addDays(parse(c.s),nd));if(STATE.settings.cascade)cascadePush(p,t.dataset.pdays);}touch(p);renderProjSide();return;}
   if(t.dataset.projstart){ensurePlan(p);if(t.value){var cur=computeProject(p).start,delta=diffDays(cur,parse(t.value));if(delta){STATE.phases.forEach(function(ph){var pp=p.plan[ph.id];if(pp){pp.s=iso(addDays(parse(pp.s),delta));pp.e=iso(addDays(parse(pp.e),delta));}});}}touch(p);renderProjSide();return;}
   if(t.dataset.f==="launch"){p.launch=t.value;touch(p);renderProjSide();return;}
   if(t.dataset.f==="buffer"){p.buffer=(t.value===""?null:Math.max(0,+t.value));touch(p);renderProjSide();return;}
@@ -1285,6 +1323,7 @@ document.addEventListener("keydown",function(e){
   if(e.key!=="Enter")return;var t=e.target;
   if(t.dataset.subadd){var p=projFromEl(t);if(!p)return;var txt=t.value.trim();if(!txt)return;var st=p.phaseState[t.dataset.subadd];st.subtasks.push({id:sid(),text:txt,done:false});st.open=true;syncPhaseFromSubs(p,t.dataset.subadd);touch(p);renderProjSide();var nc=$('.proj[data-id="'+p.id+'"]');if(nc){var inp=$('[data-subadd="'+t.dataset.subadd+'"]',nc);if(inp)inp.focus();}return;}
   if(t.dataset.stadd){var phy=findPhase(t.dataset.stadd);if(!phy)return;var tx=t.value.trim();if(!tx)return;phy.subtasks.push({id:sid(),text:tx});save();renderTemplate();var si=document.querySelector('[data-stadd="'+t.dataset.stadd+'"]');if(si)si.focus();return;}
+  if(t.dataset.phadd!=null){var pnm=t.value.trim();if(!pnm)return;var np={id:"ph"+Math.random().toString(36).slice(2,7),name:pnm,accent:PROJ_ACCENTS[STATE.phases.length%PROJ_ACCENTS.length],base:5,meta:"",subtasks:[]};STATE.phases.push(np);STATE.projects.forEach(function(pp){ensureProject(pp);});renderAll();var pa2=document.querySelector('[data-phadd]');if(pa2)pa2.focus();toast("Etapa adicionada ao fluxo");return;}
 });
 document.addEventListener("click",function(e){
   var chk=e.target.closest("[data-check]");
@@ -1308,7 +1347,7 @@ document.addEventListener("click",function(e){
   var aph=e.target.closest("[data-aphase]");
   if(aph){var ap2=aph.getAttribute("data-aphase").split("|");var app2=findProj(ap2[0]);if(app2){var awd2=isDone(app2);var ast2=app2.phaseState[ap2[1]];ast2.done=!ast2.done;ast2.doneAt=ast2.done?iso(TODAY):null;ast2.subtasks.forEach(function(x){x.done=ast2.done;});touch(app2);var ajd2=!awd2&&isDone(app2);renderProjSide();if(ajd2)celebrate(app2);}return;}
   var gopen=e.target.closest("[data-gopen]");
-  if(gopen){var oid=gopen.getAttribute("data-gopen");selProj=(selProj===oid?null:oid);renderGantt();renderTimelineDetail();if(selProj){var dbox=$("#timelineDetail");if(dbox)dbox.scrollIntoView({behavior:"smooth",block:"start"});}return;}
+  if(gopen){var oid=gopen.getAttribute("data-gopen");selProj=(selProj===oid?null:oid);renderGantt();renderTimelineDetail();return;}
   var tlc=e.target.closest("[data-tlclose]");
   if(tlc){selProj=null;renderGantt();renderTimelineDetail();return;}
   var col=e.target.closest("[data-collapse]");
@@ -1319,10 +1358,12 @@ document.addEventListener("click",function(e){
   if(re){var p6=findProj(re.getAttribute("data-reopen"));if(p6){p6.archived=false;if(isDone(p6)){var last=STATE.phases[STATE.phases.length-1];p6.phaseState[last.id].done=false;p6.phaseState[last.id].doneAt=null;}touch(p6);renderProjSide();toast("Coleção reaberta — voltou para a linha do tempo");}return;}
   var arc=e.target.closest("[data-archive]");
   if(arc){var pa=findProj(arc.getAttribute("data-archive"));if(pa){pa.archived=true;if(selProj===pa.id)selProj=null;renderProjSide();toast("Coleção arquivada — está em Projetos › Concluídos");}return;}
+  var rpk=e.target.closest("[data-repack]");
+  if(rpk){var prp=findProj(rpk.getAttribute("data-repack"));if(prp){ensurePlan(prp);repackFromLaunch(prp);touch(prp);renderProjSide();toast("Etapas reencaixadas em sequência");}return;}
   var rec=e.target.closest("[data-recalc]");
   if(rec){var prc=findProj(rec.getAttribute("data-recalc"));if(prc)confirmAction({title:"Recalcular as datas?",body:'As datas das etapas voltam ao cálculo automático a partir do <b>lançamento</b>, com os tempos padrão. Suas edições manuais de datas (e arrastos) serão substituídas.',okLabel:"Recalcular",onConfirm:function(){delete prc.plan;ensurePlan(prc);touch(prc);renderProjSide();toast("Datas recalculadas a partir do lançamento");}});return;}
   var cdb=e.target.closest("[data-celebdone]");
-  if(cdb){$("#celeb").hidden=true;switchTo("projetos");var dw=$("#doneWrap");if(dw){dw._open=true;renderProjects();var dh=$("#doneWrap .donehead");if(dh)dh.scrollIntoView({behavior:"smooth",block:"center"});}return;}
+  if(cdb){$("#celeb").hidden=true;switchTo("projetos");var dw=$("#doneWrap");if(dw){dw._openDone=true;renderProjects();var dh=$("#doneWrap .donehead");if(dh)dh.scrollIntoView({behavior:"smooth",block:"center"});}return;}
   var ccl=e.target.closest("[data-celebclose]");
   if(ccl){$("#celeb").hidden=true;return;}
   if(e.target.id==="celeb"){e.target.hidden=true;return;}
@@ -1337,6 +1378,8 @@ document.addEventListener("click",function(e){
   if(e.target.id==="confirmModal"){closeConfirm();return;}
   var mk=e.target.closest("[data-mkproj]");
   if(mk){makeProjectFromDate(mk.getAttribute("data-mkproj"));return;}
+  var phdel=e.target.closest("[data-phdel]");
+  if(phdel){var pdid=phdel.getAttribute("data-phdel");var phh=findPhase(pdid);if(phh&&STATE.phases.length>1)confirmAction({title:"Remover a etapa?",body:'A etapa <b>'+esc(phh.name)+'</b> sai do fluxo de <b>todas</b> as coleções, com suas subtarefas e datas. Não dá para desfazer.',okLabel:"Remover etapa",onConfirm:function(){STATE.phases=STATE.phases.filter(function(x){return x.id!==pdid;});STATE.projects.forEach(function(pp){if(pp.phaseState)delete pp.phaseState[pdid];if(pp.plan)delete pp.plan[pdid];if(pp.overrides)delete pp.overrides[pdid];});renderAll();toast("Etapa removida do fluxo");}});return;}
   var stdel=e.target.closest("[data-stdel]");
   if(stdel){var prz=stdel.getAttribute("data-stdel").split("|");var phz=findPhase(prz[0]);if(phz){var tsx=null;phz.subtasks.forEach(function(x){if(x.id===prz[1])tsx=x;});confirmAction({title:"Remover subtarefa padrão?",body:'“<b>'+esc(tsx?tsx.text:"")+'</b>” sai do modelo da etapa <b>'+esc(phz.name)+'</b> — não entra mais em projetos novos.',okLabel:"Remover",onConfirm:function(){phz.subtasks=phz.subtasks.filter(function(x){return x.id!==prz[1];});save();renderTemplate();}});}return;}
   var tprod=e.target.closest("[data-tprod]");
@@ -1346,8 +1389,10 @@ document.addEventListener("click",function(e){
 function projFromEl(node){var c=node.closest("[data-id]");return c?findProj(c.dataset.id):null;}
 function findSub(p,phId,sId){var st=p.phaseState[phId];if(!st)return null;for(var i=0;i<st.subtasks.length;i++)if(st.subtasks[i].id===sId)return st.subtasks[i];return null;}
 
+var PROJ_ACCENTS=["mizu","fuji","sango","matcha","sakura","gold","torinoko"];
+function nextAccent(){return PROJ_ACCENTS[STATE.projects.length%PROJ_ACCENTS.length];}
 $("#addProj").addEventListener("click",function(){
-  var p={id:uid(),name:"Nova coleção",launch:iso(addDays(TODAY,60)),accent:"mizu",qty:{P:0,M:1,G:0},show:true,buffer:null,collapsed:false,overrides:{},note:"",phaseState:{},startedAt:null,updatedAt:iso(TODAY)};
+  var p={id:uid(),name:"Nova coleção",launch:iso(addDays(TODAY,60)),accent:nextAccent(),qty:{P:0,M:1,G:0},show:true,buffer:null,collapsed:false,overrides:{},note:"",phaseState:{},startedAt:null,updatedAt:iso(TODAY)};
   ensureProject(p);STATE.phases.forEach(function(ph){p.phaseState[ph.id].subtasks=subsFromTemplate(ph);});STATE.projects.push(p);renderProjSide();switchTo("projetos");
   var last=$('.proj[data-id="'+p.id+'"]');if(last){last.scrollIntoView({behavior:"smooth",block:"center"});var i=$('input[data-f="name"]',last);if(i){i.focus();i.select();}}
 });
@@ -1357,7 +1402,7 @@ $("#applyAll").addEventListener("click",function(){STATE.projects.forEach(functi
 function makeProjectFromDate(id){
   var d=findDate(id);if(!d)return;
   var launchBy=addDays(parse(d.holiday),-d.lead*7);
-  var p={id:uid(),name:"Coleção "+d.name,launch:iso(launchBy),accent:d.accent||"mizu",qty:{P:STATE.ref.qty.P,M:STATE.ref.qty.M,G:STATE.ref.qty.G},show:true,buffer:null,collapsed:false,overrides:{},note:d.note||"",phaseState:{},startedAt:null,updatedAt:iso(TODAY)};
+  var p={id:uid(),name:"Coleção "+d.name,launch:iso(launchBy),accent:nextAccent(),qty:{P:STATE.ref.qty.P,M:STATE.ref.qty.M,G:STATE.ref.qty.G},show:true,buffer:null,collapsed:false,overrides:{},note:d.note||"",phaseState:{},startedAt:null,updatedAt:iso(TODAY)};
   ensureProject(p);STATE.phases.forEach(function(ph){p.phaseState[ph.id].subtasks=subsFromTemplate(ph);});STATE.projects.push(p);renderProjSide();switchTo("projetos");toast("Projeto criado a partir de "+d.name);
   var last=$('.proj[data-id="'+p.id+'"]');if(last)last.scrollIntoView({behavior:"smooth",block:"center"});
 }
