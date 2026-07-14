@@ -771,6 +771,8 @@ function computeProject(p){
 function phaseIndex(phid){for(var i=0;i<STATE.phases.length;i++)if(STATE.phases[i].id===phid)return i;return -1;}
 /* empurra as etapas POSTERIORES (na ordem do pipeline) por delta dias — só quando o modo "empurrar" está ligado */
 function shiftLater(p,phid,delta){if(!delta||!p.plan)return;var idx=phaseIndex(phid);for(var i=idx+1;i<STATE.phases.length;i++){var pp=p.plan[STATE.phases[i].id];if(pp){pp.s=iso(addDays(parse(pp.s),delta));pp.e=iso(addDays(parse(pp.e),delta));}}}
+/* "empurrar etapas seguintes" ligado: reencaixa as POSTERIORES logo após a etapa editada, preservando a duração de cada uma (mantém a sequência sempre colada) */
+function repackTail(p,phid){if(!p.plan)return;var idx=phaseIndex(phid);if(idx<0)return;var prevEnd=parse(p.plan[phid].e);for(var i=idx+1;i<STATE.phases.length;i++){var pp=p.plan[STATE.phases[i].id];if(!pp)continue;var dur=Math.max(1,diffDays(parse(pp.s),parse(pp.e)));pp.s=iso(prevEnd);pp.e=iso(addDays(prevEnd,dur));prevEnd=parse(pp.e);}}
 function prodWindow(cp){var s=null,e=null;cp.segs.forEach(function(sg){if(sg.ph.production){if(s==null||sg.start<s)s=new Date(sg.start);if(e==null||sg.end>e)e=new Date(sg.end);}});return s?{s:s,e:e}:null;}
 function phaseDone(p,ph){var st=p.phaseState[ph.id];return!!(st&&st.done);}
 function currentIndex(p){for(var i=0;i<STATE.phases.length;i++)if(!phaseDone(p,STATE.phases[i]))return i;return STATE.phases.length;}
@@ -1061,7 +1063,8 @@ function renderGantt(){
   function gtip(){var t=document.getElementById("gdragtip");if(!t){t=el("div","gdragtip");t.id="gdragtip";document.body.appendChild(t);}return t;}
   function attachDrag(node,kind,p,phid){
     node.style.touchAction="none";node.classList.add("drag");
-    if(kind==="bar")node.addEventListener("mousemove",function(hv){var r=node.getBoundingClientRect();var ox=hv.clientX-r.left;node.style.cursor=(ox<9||ox>r.width-9)?"ew-resize":"grab";});
+    function edgeZone(w){return w<26?0:Math.min(9,w*0.28);}
+    if(kind==="bar")node.addEventListener("mousemove",function(hv){var r=node.getBoundingClientRect();var ox=hv.clientX-r.left,ez=edgeZone(r.width);node.style.cursor=(ez&&(ox<ez||ox>r.width-ez))?"ew-resize":"grab";});
     node.addEventListener("click",function(cev){if(node._moved){cev.stopPropagation();cev.preventDefault();node._moved=false;}});
     node.addEventListener("pointerdown",function(ev){
       if(ev.button!=null&&ev.button!==0)return;
@@ -1069,7 +1072,7 @@ function renderGantt(){
       ensurePlan(p);var pl=phid?p.plan[phid]:null;
       var s0=pl?parse(pl.s):null,e0=pl?parse(pl.e):null,L0=parse(p.launch);
       var rect=node.getBoundingClientRect(),mode=kind;
-      if(kind==="bar"){var offX=ev.clientX-rect.left;mode=offX<9?"l":(offX>rect.width-9?"r":"m");}
+      if(kind==="bar"){var offX=ev.clientX-rect.left,ez=edgeZone(rect.width);mode=(ez&&offX<ez)?"l":(ez&&offX>rect.width-ez)?"r":"m";}
       var startX=ev.clientX,ns=s0,ne=e0,nl=L0,tip=gtip();tip.style.display="block";
       try{node.setPointerCapture(ev.pointerId);}catch(_){}
       function mv(m){
@@ -1086,7 +1089,7 @@ function renderGantt(){
       function up(){
         document.removeEventListener("pointermove",mv);document.removeEventListener("pointerup",up);
         try{node.releasePointerCapture(ev.pointerId);}catch(_){}tip.style.display="none";
-        if(node._moved){if(mode==="mile"){p.launch=iso(nl);}else{pl.s=iso(ns);pl.e=iso(ne);if(STATE.settings.cascade){if(mode==="m")shiftLater(p,phid,diffDays(s0,ns));else if(mode==="r")shiftLater(p,phid,diffDays(e0,ne));}}touch(p);save();renderProjSide();}
+        if(node._moved){if(mode==="mile"){p.launch=iso(nl);}else{pl.s=iso(ns);pl.e=iso(ne);if(STATE.settings.cascade)repackTail(p,phid);}touch(p);save();renderProjSide();}
       }
       document.addEventListener("pointermove",mv);document.addEventListener("pointerup",up);
     });
@@ -1270,9 +1273,9 @@ document.addEventListener("change",function(e){
   if(t.tagName==="SELECT"){onEdit(e);return;}
   var card=t.closest&&t.closest(".proj");if(!card)return;
   var p=findProj(card.dataset.id);if(!p)return;
-  if(t.dataset.pstart){ensurePlan(p);var a=p.plan[t.dataset.pstart];if(a&&t.value){a.s=t.value;if(parse(a.s)>=parse(a.e))a.e=iso(addDays(parse(a.s),1));}touch(p);renderProjSide();return;}
-  if(t.dataset.pend){ensurePlan(p);var b=p.plan[t.dataset.pend];if(b&&t.value){var be0=parse(b.e);var e2=iso(addDays(parse(t.value),1));if(parse(e2)<=parse(b.s))e2=iso(addDays(parse(b.s),1));b.e=e2;if(STATE.settings.cascade)shiftLater(p,t.dataset.pend,diffDays(be0,parse(e2)));}touch(p);renderProjSide();return;}
-  if(t.dataset.pdays){ensurePlan(p);var c=p.plan[t.dataset.pdays];if(c){var ce0=parse(c.e);var nd=Math.max(1,parseInt(t.value||1,10));c.e=iso(addDays(parse(c.s),nd));if(STATE.settings.cascade)shiftLater(p,t.dataset.pdays,diffDays(ce0,parse(c.e)));}touch(p);renderProjSide();return;}
+  if(t.dataset.pstart){ensurePlan(p);var a=p.plan[t.dataset.pstart];if(a&&t.value){a.s=t.value;if(parse(a.s)>=parse(a.e))a.e=iso(addDays(parse(a.s),1));if(STATE.settings.cascade)repackTail(p,t.dataset.pstart);}touch(p);renderProjSide();return;}
+  if(t.dataset.pend){ensurePlan(p);var b=p.plan[t.dataset.pend];if(b&&t.value){var e2=iso(addDays(parse(t.value),1));if(parse(e2)<=parse(b.s))e2=iso(addDays(parse(b.s),1));b.e=e2;if(STATE.settings.cascade)repackTail(p,t.dataset.pend);}touch(p);renderProjSide();return;}
+  if(t.dataset.pdays){ensurePlan(p);var c=p.plan[t.dataset.pdays];if(c){var nd=Math.max(1,parseInt(t.value||1,10));c.e=iso(addDays(parse(c.s),nd));if(STATE.settings.cascade)repackTail(p,t.dataset.pdays);}touch(p);renderProjSide();return;}
   if(t.dataset.projstart){ensurePlan(p);if(t.value){var cur=computeProject(p).start,delta=diffDays(cur,parse(t.value));if(delta){STATE.phases.forEach(function(ph){var pp=p.plan[ph.id];if(pp){pp.s=iso(addDays(parse(pp.s),delta));pp.e=iso(addDays(parse(pp.e),delta));}});}}touch(p);renderProjSide();return;}
   if(t.dataset.f==="launch"){p.launch=t.value;touch(p);renderProjSide();return;}
   if(t.dataset.f==="buffer"){p.buffer=(t.value===""?null:Math.max(0,+t.value));touch(p);renderProjSide();return;}
